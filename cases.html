@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>案例中心 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #f8fafc; }
+
+    /* Hero */
+    .cases-hero { background: var(--dark); padding: 120px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+    .cases-hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 800px 400px at 50% 0%, rgba(99,102,241,.2) 0%, transparent 60%); }
+    .cases-hero h1 { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 16px; position: relative; }
+    .cases-hero p { font-size: 16px; color: rgba(255,255,255,.5); position: relative; }
+
+    /* Filter */
+    .filter-bar { max-width: 1200px; margin: -24px auto 0; padding: 0 24px; position: relative; z-index: 2; }
+    .filter-inner { background: #fff; border-radius: 16px; padding: 20px 28px; box-shadow: 0 4px 24px rgba(0,0,0,.08); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .filter-label { font-size: 13px; font-weight: 600; color: #374151; flex-shrink: 0; }
+    .filter-btn { padding: 7px 16px; border-radius: 50px; font-size: 13px; font-weight: 500; border: 1.5px solid #e2e8f0; background: #fff; color: #64748b; cursor: pointer; transition: all .15s; }
+    .filter-btn:hover { border-color: #6366f1; color: #6366f1; }
+    .filter-btn.active { background: #6366f1; border-color: #6366f1; color: #fff; }
+
+    /* Grid */
+    .cases-main { max-width: 1200px; margin: 48px auto 80px; padding: 0 24px; }
+    .cases-count { font-size: 13px; color: #94a3b8; margin-bottom: 28px; }
+    .cases-grid-main { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+    @media (max-width: 1000px) { .cases-grid-main { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .cases-grid-main { grid-template-columns: 1fr; } }
+
+    .case-card-main {
+      background: #fff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all .25s;
+    }
+    .case-card-main:hover { border-color: #6366f1; transform: translateY(-4px); box-shadow: 0 16px 48px rgba(99,102,241,.1); }
+
+    .case-card-img {
+      height: 180px;
+      background: linear-gradient(135deg, #ede9fe 0%, #fce7f3 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+    .case-card-img::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(255,255,255,.5) 0%, transparent 50%);
+    }
+
+    .case-card-body { padding: 20px 22px 24px; }
+    .case-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+    .case-card-industry { font-size: 11px; background: #ede9fe; color: #6366f1; padding: 3px 10px; border-radius: 50px; font-weight: 600; }
+    .case-card-type { font-size: 11px; color: #94a3b8; }
+    .case-card-name { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 14px; }
+    .case-card-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; padding: 14px; background: #f8fafc; border-radius: 12px; }
+    .ccm-val { font-size: 22px; font-weight: 800; background: linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .ccm-label { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .case-card-desc { font-size: 13px; color: #64748b; line-height: 1.7; }
+    .case-read-more { display: inline-block; margin-top: 12px; font-size: 13px; color: #6366f1; font-weight: 600; }
+
+    /* Detail modal */
+    .detail-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.55); backdrop-filter: blur(4px);
+      z-index: 9999; display: flex; align-items: center; justify-content: center;
+      animation: fadeIn .2s;
+    }
+    .detail-modal {
+      background: #fff; border-radius: 24px; width: calc(100% - 48px); max-width: 760px;
+      max-height: 85vh; overflow-y: auto; padding: 48px; position: relative;
+      animation: slideUp .3s ease;
+    }
+    .dm-close { position: absolute; top: 16px; right: 20px; font-size: 24px; color: #94a3b8; background: none; border: none; cursor: pointer; line-height: 1; }
+    .dm-close:hover { color: #374151; }
+    .dm-industry { display: inline-block; font-size: 12px; background: #ede9fe; color: #6366f1; padding: 4px 12px; border-radius: 50px; margin-bottom: 16px; font-weight: 600; }
+    .dm-title { font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
+    .dm-sub { font-size: 14px; color: #64748b; margin-bottom: 32px; line-height: 1.7; }
+    .dm-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .dm-metric { background: #f8fafc; border-radius: 12px; padding: 16px; text-align: center; }
+    .dm-metric-val { font-size: 24px; font-weight: 800; background: linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .dm-metric-label { font-size: 12px; color: #94a3b8; margin-top: 4px; }
+    .dm-section { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 12px; }
+    .dm-body { font-size: 14px; color: #374151; line-height: 1.9; }
+
+    @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">✦</span>
+      <span class="logo-text">女娲数字人</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">首页</a>
+      <a href="solution.html" class="nav-link">解决方案</a>
+      <a href="cases.html" class="nav-link active">案例中心</a>
+    </nav>
+    <div class="nav-cta">
+      <div id="navLoggedOut"><button class="btn-primary" onclick="goLogin()">登录</button></div>
+      <div id="navLoggedIn" style="display:none;align-items:center;gap:12px">
+        <a href="console.html" class="btn-outline">控制台</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="cases-hero">
+  <h1>客户成功案例</h1>
+  <p>超过 10,000 家商家信任女娲，用 AI 数字人实现业务增长</p>
+</div>
+
+<!-- Filter -->
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-label">筛选：</span>
+    <button class="filter-btn active" onclick="filterCases('all', this)">全部</button>
+    <button class="filter-btn" onclick="filterCases('beauty', this)">美妆护肤</button>
+    <button class="filter-btn" onclick="filterCases('3c', this)">3C 数码</button>
+    <button class="filter-btn" onclick="filterCases('food', this)">食品饮料</button>
+    <button class="filter-btn" onclick="filterCases('fashion', this)">服饰鞋包</button>
+    <button class="filter-btn" onclick="filterCases('home', this)">家居家电</button>
+  </div>
+</div>
+
+<!-- Grid -->
+<div class="cases-main">
+  <div class="cases-count" id="casesCount">共 6 个案例</div>
+  <div class="cases-grid-main" id="casesGrid">
+    <!-- rendered by JS -->
+  </div>
+</div>
+
+<!-- Detail modal -->
+<div id="detailModal" style="display:none"></div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo"><span class="logo-icon">✦</span><span class="logo-text">女娲数字人</span></div>
+      <p class="footer-desc">AI 驱动的智能直播平台</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>资源</h5>
+        <a href="cases.html">客户案例</a>
+        <a href="#">更新公告</a>
+      </div>
+      <div class="footer-col">
+        <h5>关于</h5>
+        <a href="privacy.html">隐私政策</a>
+        <a href="terms.html">服务条款</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 女娲数字人 All Rights Reserved</span>
+    <span>京ICP备XXXXXXXX号</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+const CASES_DATA = [
+  { id: 'case1', category: 'beauty', emoji: '🌸', industry: '美妆护肤', type: '极速开播', name: '某头部美妆品牌', metrics: ['+320%', '4.8x', '24h'], metricLabels: ['GMV 提升', 'ROI', '日均在播'], desc: '引入女娲数字人后，实现 7×24h 不间断直播，月均 GMV 从 50 万增长至 210 万。', detail: '该品牌原有直播团队每日只能播出8小时，引入女娲数字人后实现全天候直播，配合AI脚本优化，ROI从1.5提升至4.8，月均GMV从50万增至210万元。' },
+  { id: 'case2', category: '3c', emoji: '📱', industry: '3C 数码', type: '矩阵运营', name: '某知名 3C 零售商', metrics: ['8个', '-60%', '+156%'], metricLabels: ['并发直播间', '运营成本', 'GMV 提升'], desc: '矩阵式运营 8 个直播账号，统一管理脚本与形象，运营成本降低 60%。', detail: '借助女娲高级版矩阵开播能力，商家实现了8个账号同步开播，统一脚本管理大幅降低运营人力，月均GMV实现156%增长，成为行业标杆案例。' },
+  { id: 'case3', category: 'food', emoji: '🍵', industry: '食品饮料', type: 'AI 脚本', name: '某新消费食品品牌', metrics: ['5.2x', '24h', '¥0'], metricLabels: ['转化率提升', '日均在播', '人力成本'], desc: 'AI 脚本自动优化带货话术，全天不间断直播，转化率提升 5.2 倍。', detail: '品牌原先需要3名主播轮流，引入女娲后人力成本归零，AI脚本针对食品品类深度优化，购物车点击率提升5.2倍，好评率也显著提升。' },
+  { id: 'case4', category: 'fashion', emoji: '👗', industry: '服饰鞋包', type: '定制数字人', name: '某快时尚品牌', metrics: ['+280%', '3.6x', '4K'], metricLabels: ['粉丝增长', 'ROI', '高清画质'], desc: '定制专属数字人形象，融合品牌调性，高清4K直播，品牌认知度显著提升。', detail: '基于高级版定制能力，品牌复刻了明星代言人的形象数字人，配合4K高清直播和专业灯光模拟，直播间视觉质感大幅提升，粉丝增长280%。' },
+  { id: 'case5', category: 'home', emoji: '🛋️', industry: '家居家电', type: '极速开播', name: '某家居电商品牌', metrics: ['+190%', '2.8x', '7d'], metricLabels: ['GMV 提升', 'ROI', '持续直播'], desc: '持续7天不间断直播大促，单次活动 GMV 突破百万，刷新历史记录。', detail: '年货节期间，该品牌通过极速开播实现7天不间断直播大促，单次活动GMV破百万，同比增长190%，成为平台年货节家居品类TOP商家。' },
+  { id: 'case6', category: 'beauty', emoji: '💄', industry: '美妆护肤', type: '矩阵运营', name: '某新锐美妆品牌', metrics: ['6个', '+410%', '1pp'], metricLabels: ['矩阵账号', 'GMV 增长', '流量扶持'], desc: '矩阵6账号同步开播，叠加 1pp 流量扶持，实现爆发式增长。', detail: '品牌从0起步，通过女娲高级版获得1pp流量扶持，同时矩阵运营6个账号，短短3个月GMV增长410%，成功跻身平台美妆品类头部商家。' },
+];
+
+function renderCases(filter) {
+  const grid = document.getElementById('casesGrid');
+  const countEl = document.getElementById('casesCount');
+  const list = filter === 'all' ? CASES_DATA : CASES_DATA.filter(c => c.category === filter);
+
+  countEl.textContent = `共 ${list.length} 个案例`;
+  grid.innerHTML = list.map(c => `
+    <div class="case-card-main" id="${c.id}" onclick="showDetail('${c.id}')">
+      <div class="case-card-img">${c.emoji}</div>
+      <div class="case-card-body">
+        <div class="case-card-header">
+          <span class="case-card-industry">${c.industry}</span>
+          <span class="case-card-type">${c.type}</span>
+        </div>
+        <div class="case-card-name">${c.name}</div>
+        <div class="case-card-metrics">
+          ${c.metrics.map((v, i) => `
+            <div>
+              <div class="ccm-val">${v}</div>
+              <div class="ccm-label">${c.metricLabels[i]}</div>
+            </div>`).join('')}
+        </div>
+        <div class="case-card-desc">${c.desc}</div>
+        <span class="case-read-more">查看完整案例 →</span>
+      </div>
+    </div>`).join('');
+}
+
+function filterCases(filter, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCases(filter);
+}
+
+function showDetail(id) {
+  const c = CASES_DATA.find(x => x.id === id);
+  if (!c) return;
+  const modal = document.getElementById('detailModal');
+  modal.innerHTML = `
+    <div class="detail-modal-overlay" onclick="if(event.target===this)closeDetail()">
+      <div class="detail-modal">
+        <button class="dm-close" onclick="closeDetail()">×</button>
+        <div class="dm-industry">${c.industry} · ${c.type}</div>
+        <h2 class="dm-title">${c.name}</h2>
+        <p class="dm-sub">${c.desc}</p>
+        <div class="dm-metrics">
+          ${c.metrics.map((v, i) => `
+            <div class="dm-metric">
+              <div class="dm-metric-val">${v}</div>
+              <div class="dm-metric-label">${c.metricLabels[i]}</div>
+            </div>`).join('')}
+        </div>
+        <div class="dm-section">案例详情</div>
+        <div class="dm-body">${c.detail}</div>
+        <div style="margin-top:32px">
+          <button onclick="goLogin()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:14px 40px;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s">立即开始使用</button>
+        </div>
+      </div>
+    </div>`;
+  modal.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDetail() {
+  document.getElementById('detailModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+  updateNavUI();
+  initNavbarScroll();
+  renderCases('all');
+
+  // 从首页案例卡片点击跳转后，高亮对应卡片
+  const hash = window.location.hash;
+  if (hash) {
+    const card = document.getElementById(hash.replace('#',''));
+    if (card) { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); showDetail(hash.replace('#','')); }
+  }
+});
+</script>
+</body>
+</html>

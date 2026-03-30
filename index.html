@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>女娲数字人 — AI驱动的智能直播平台</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ========== 导航栏 ========== -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">✦</span>
+      <span class="logo-text">女娲数字人</span>
+    </a>
+
+    <nav class="nav-links">
+      <div class="nav-item has-dropdown">
+        <span class="nav-link">开播工具 <i class="arrow-down">▾</i></span>
+        <div class="nav-dropdown">
+          <a href="#" class="dropdown-item" onclick="handleToolNav(event,'极速开播')">极速开播</a>
+          <a href="#" class="dropdown-item" onclick="handleToolNav(event,'多分镜直播间')">多分镜直播间</a>
+        </div>
+      </div>
+      <a href="solution.html" class="nav-link">解决方案</a>
+      <div class="nav-item has-dropdown">
+        <span class="nav-link">关于我们 <i class="arrow-down">▾</i></span>
+        <div class="nav-dropdown">
+          <a href="#" class="dropdown-item">使用指南</a>
+          <a href="#" class="dropdown-item">更新公告</a>
+        </div>
+      </div>
+      <a href="cases.html" class="nav-link">案例中心</a>
+    </nav>
+
+    <div class="nav-cta" id="navCta">
+      <!-- 未登录态 -->
+      <div id="navLoggedOut">
+        <button class="btn-primary" onclick="goLogin()">登录</button>
+      </div>
+      <!-- 已登录态（默认隐藏） -->
+      <div id="navLoggedIn" style="display:none; align-items:center; gap:12px;">
+        <span class="bell-btn" onclick="location.href='console.html#messages'" title="消息中心">
+          🔔<span class="badge" id="navBadge">3</span>
+        </span>
+        <a href="console.html" class="btn-outline">进入控制台</a>
+        <div class="avatar-wrap" id="avatarWrap">
+          <div class="avatar">广</div>
+          <div class="avatar-dropdown">
+            <a href="console.html#messages">消息中心</a>
+            <a href="#" onclick="logout()">退出登录</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ========== HERO 区 ========== -->
+<section class="hero" id="hero">
+  <!-- 背景动效粒子 -->
+  <div class="hero-bg">
+    <div class="hero-orb orb1"></div>
+    <div class="hero-orb orb2"></div>
+    <div class="hero-orb orb3"></div>
+    <!-- 数字人轮廓动效 -->
+    <div class="avatar-silhouette">
+      <div class="sil-ring ring1"></div>
+      <div class="sil-ring ring2"></div>
+      <div class="sil-ring ring3"></div>
+      <div class="sil-body">
+        <div class="sil-head"></div>
+        <div class="sil-torso"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <div class="hero-badge">🚀 全新自助版上线 · 499元/周即可开播</div>
+    <h1 class="hero-title">
+      AI数字人直播<br />
+      <span class="gradient-text">7×24h 不间断开播</span>
+    </h1>
+    <p class="hero-subtitle">零硬件、零人力成本，一次配置持续产出<br />让 AI 为你的直播间打工</p>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">10,000<sup>+</sup></span>
+        <span class="stat-label">合作商家</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">¥0</span>
+        <span class="stat-label">运营成本</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">24h</span>
+        <span class="stat-label">日均开播时长</span>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn-hero-primary" onclick="handleHeroCTA()">即刻开播</button>
+      <a href="solution.html" class="btn-hero-ghost">查看版本对比</a>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>向下滑动探索</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ========== 核心利益点 P2–P3 ========== -->
+<section class="benefits" id="benefits">
+  <div class="section-header">
+    <div class="section-tag">核心价值</div>
+    <h2 class="section-title">为什么选择女娲数字人？</h2>
+  </div>
+
+  <div class="benefits-slider" id="benefitsSlider">
+    <!-- 指示器 -->
+    <div class="slider-dots" id="sliderDots">
+      <button class="dot active" onclick="switchBenefit(0)"></button>
+      <button class="dot" onclick="switchBenefit(1)"></button>
+      <button class="dot" onclick="switchBenefit(2)"></button>
+    </div>
+    <button class="slider-arrow arrow-left" onclick="prevBenefit()">‹</button>
+    <button class="slider-arrow arrow-right" onclick="nextBenefit()">›</button>
+
+    <div class="benefits-track" id="benefitsTrack">
+
+      <!-- 利益点 1：低成本高时长 -->
+      <div class="benefit-slide active" data-index="0">
+        <div class="benefit-inner">
+          <div class="benefit-left">
+            <div class="benefit-tag">低成本 · 高时长</div>
+            <h3 class="benefit-title">硬件人力 0 成本<br />7×24h 不间断开播</h3>
+            <ul class="benefit-list">
+              <li><span class="check">✓</span> 无需摄像机、直播间硬件设备</li>
+              <li><span class="check">✓</span> 无需招募、培训直播人员</li>
+              <li><span class="check">✓</span> 一次配置脚本，持续自动化产出</li>
+            </ul>
+            <!-- 数据可视化 -->
+            <div class="data-compare">
+              <div class="compare-row">
+                <span class="compare-label">传统直播人力成本</span>
+                <div class="compare-bar-wrap"><div class="compare-bar bar-bad" style="width:85%"><span>¥8,000+/月</span></div></div>
+              </div>
+              <div class="compare-row">
+                <span class="compare-label">女娲数字人成本</span>
+                <div class="compare-bar-wrap"><div class="compare-bar bar-good" style="width:15%"><span>¥499/周</span></div></div>
+              </div>
+              <div class="compare-row">
+                <span class="compare-label">传统日均开播时长</span>
+                <div class="compare-bar-wrap"><div class="compare-bar bar-bad" style="width:35%"><span>8h</span></div></div>
+              </div>
+              <div class="compare-row">
+                <span class="compare-label">女娲数字人开播时长</span>
+                <div class="compare-bar-wrap"><div class="compare-bar bar-good" style="width:100%"><span>24h ∞</span></div></div>
+              </div>
+            </div>
+          </div>
+          <div class="benefit-right">
+            <div class="mockup-screen">
+              <div class="mockup-header">
+                <span class="dot-r"></span><span class="dot-y"></span><span class="dot-g"></span>
+                <span style="margin-left:8px;font-size:11px;color:#aaa">直播控制台</span>
+              </div>
+              <div class="mockup-live">
+                <div class="live-badge">🔴 直播中</div>
+                <div class="live-avatar-wrap">
+                  <div class="live-avatar-inner">
+                    <div class="live-head"></div>
+                    <div class="live-body"></div>
+                    <div class="live-pulse"></div>
+                  </div>
+                </div>
+                <div class="live-stats-row">
+                  <span>👁 12,384</span>
+                  <span>💬 286条弹幕</span>
+                  <span>🛒 ROI 4.2</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 利益点 2：矩阵式运营 -->
+      <div class="benefit-slide" data-index="1">
+        <div class="benefit-inner">
+          <div class="benefit-left">
+            <div class="benefit-tag">矩阵运营</div>
+            <h3 class="benefit-title">多账号并行<br />快速泛化脚本</h3>
+            <ul class="benefit-list">
+              <li><span class="check">✓</span> 支持多账号矩阵同时开播</li>
+              <li><span class="check">✓</span> 快速泛化多个开播脚本</li>
+              <li><span class="check">✓</span> 减少试验周期，获得更多转化</li>
+            </ul>
+            <div class="matrix-stats">
+              <div class="m-stat"><span class="m-num">4x</span><span class="m-label">并发直播间数</span></div>
+              <div class="m-stat"><span class="m-num">+156%</span><span class="m-label">GMV 提升</span></div>
+              <div class="m-stat"><span class="m-num">-70%</span><span class="m-label">试验周期缩短</span></div>
+            </div>
+          </div>
+          <div class="benefit-right">
+            <div class="matrix-grid">
+              <div class="matrix-cell active"><div class="mc-dot"></div><div class="mc-label">直播间 A<br/><small>🔴 开播中</small></div></div>
+              <div class="matrix-cell active"><div class="mc-dot"></div><div class="mc-label">直播间 B<br/><small>🔴 开播中</small></div></div>
+              <div class="matrix-cell active"><div class="mc-dot"></div><div class="mc-label">直播间 C<br/><small>🔴 开播中</small></div></div>
+              <div class="matrix-cell standby"><div class="mc-dot standby"></div><div class="mc-label">直播间 D<br/><small>⏱ 待机中</small></div></div>
+            </div>
+            <div class="matrix-arrow">⬇ 统一管理</div>
+            <div class="matrix-dashboard">
+              <span>总在线 38,204</span>
+              <span>总成交 ¥124,800</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 利益点 3：超写实数字人 -->
+      <div class="benefit-slide" data-index="2">
+        <div class="benefit-inner">
+          <div class="benefit-left">
+            <div class="benefit-tag">超写实数字人</div>
+            <h3 class="benefit-title">千款形象<br />深度定制复刻</h3>
+            <ul class="benefit-list">
+              <li><span class="check">✓</span> 千款高表现力数字人形象</li>
+              <li><span class="check">✓</span> 支持品牌专属定制与复刻</li>
+              <li><span class="check">✓</span> 动作情感细腻，媲美真人</li>
+            </ul>
+          </div>
+          <div class="benefit-right">
+            <div class="avatar-grid">
+              <div class="av-card"><div class="av-head style1"></div><div class="av-name">时尚女主播</div></div>
+              <div class="av-card featured"><div class="av-head style2"></div><div class="av-name">专业带货主播</div><div class="av-badge">热门</div></div>
+              <div class="av-card"><div class="av-head style3"></div><div class="av-name">知识讲解主播</div></div>
+              <div class="av-card"><div class="av-head style4"></div><div class="av-name">品牌定制形象</div></div>
+              <div class="av-more">+999款</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /benefits-track -->
+  </div>
+</section>
+
+<!-- ========== AI 能力展示 P4 ========== -->
+<section class="ai-capabilities" id="aiCap">
+  <div class="section-header">
+    <div class="section-tag">AI 技术</div>
+    <h2 class="section-title">四大 AI 核心能力</h2>
+    <p class="section-desc">鼠标悬停查看功能演示</p>
+  </div>
+
+  <div class="cap-grid">
+
+    <div class="cap-item" data-cap="avatar">
+      <div class="cap-icon">🧑‍🎤</div>
+      <h4>超写实数字人</h4>
+      <p>高表现力主播，动作情感面面俱到</p>
+      <!-- 浮窗 -->
+      <div class="cap-popup">
+        <div class="popup-title">🧑‍🎤 超写实数字人</div>
+        <div class="popup-demo demo-avatar">
+          <div class="demo-avatar-anim">
+            <div class="da-head"></div>
+            <div class="da-body"></div>
+            <div class="da-wave">正在切换形象...</div>
+          </div>
+        </div>
+        <p class="popup-desc">千款形象库，支持品牌专属定制复刻，媲美真人质感</p>
+      </div>
+    </div>
+
+    <div class="cap-item" data-cap="voice">
+      <div class="cap-icon">🎙️</div>
+      <h4>风格化音色</h4>
+      <p>还原真人音色，风格多样，情感丰富</p>
+      <div class="cap-popup">
+        <div class="popup-title">🎙️ 风格化音色</div>
+        <div class="popup-demo demo-voice">
+          <div class="voice-bars">
+            <div class="vb b1"></div><div class="vb b2"></div><div class="vb b3"></div>
+            <div class="vb b4"></div><div class="vb b5"></div><div class="vb b6"></div>
+            <div class="vb b7"></div>
+          </div>
+          <div class="voice-styles">
+            <span class="vs active">活泼</span>
+            <span class="vs">专业</span>
+            <span class="vs">温柔</span>
+            <span class="vs">磁性</span>
+          </div>
+        </div>
+        <p class="popup-desc">20+ 声音风格，AI 情感合成引擎，自然流畅表达</p>
+      </div>
+    </div>
+
+    <div class="cap-item" data-cap="script">
+      <div class="cap-icon">📝</div>
+      <h4>智能脚本生成</h4>
+      <p>基于高转化数据，AI 自动生成带货脚本</p>
+      <div class="cap-popup">
+        <div class="popup-title">📝 智能脚本生成</div>
+        <div class="popup-demo demo-script">
+          <div class="script-typewriter" id="scriptTyper">
+            <span class="typing-text">正在为您生成带货脚本...</span>
+          </div>
+          <div class="script-result">
+            「这款产品质量真的太好了！现在下单还有限时优惠，库存有限！👇点击下方购买链接...」
+          </div>
+        </div>
+        <p class="popup-desc">分析海量高转化直播数据，一键生成专业带货脚本</p>
+      </div>
+    </div>
+
+    <div class="cap-item" data-cap="interact">
+      <div class="cap-icon">💬</div>
+      <h4>AI 智能互动</h4>
+      <p>AI 构建互动库，直播间自动回复弹幕</p>
+      <div class="cap-popup popup-flip">
+        <div class="popup-title">💬 AI 智能互动</div>
+        <div class="popup-demo demo-interact">
+          <div class="barrage-stream" id="barrageStream">
+            <div class="barrage-item">用户A：这个多少钱？</div>
+            <div class="barrage-item ai">🤖 AI：现在活动价仅需299！</div>
+            <div class="barrage-item">用户B：质量怎么样？</div>
+            <div class="barrage-item ai">🤖 AI：品质保证，支持7天退换~</div>
+          </div>
+        </div>
+        <p class="popup-desc">实时分析弹幕意图，自动生成精准回复，提升互动率</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ========== 极速开播展示 P5 ========== -->
+<section class="fast-launch" id="fastLaunch">
+  <div class="section-header light">
+    <div class="section-tag tag-light">极速开播</div>
+    <h2 class="section-title light">5 分钟完成配置，立即开播</h2>
+    <p class="section-desc light">无需专业知识，按步骤操作即可</p>
+  </div>
+
+  <div class="steps-container">
+    <div class="step-item" id="step1">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <h4>选择数字人形象</h4>
+        <p>从千款形象库中选择，或上传定制形象</p>
+        <div class="step-screen">
+          <div class="step-screen-inner">
+            <div class="ss-title">形象选择</div>
+            <div class="ss-grid">
+              <div class="ss-av ss-selected">✓</div>
+              <div class="ss-av"></div>
+              <div class="ss-av"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+    </div>
+
+    <div class="step-item" id="step2">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <h4>配置直播脚本</h4>
+        <p>AI 一键生成脚本，或手动编辑内容</p>
+        <div class="step-screen">
+          <div class="step-screen-inner">
+            <div class="ss-title">脚本配置</div>
+            <div class="ss-lines">
+              <div class="ss-line"></div>
+              <div class="ss-line short"></div>
+              <div class="ss-line"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+    </div>
+
+    <div class="step-item" id="step3">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <h4>绑定直播账号</h4>
+        <p>授权快手账号，一键绑定直播间</p>
+        <div class="step-screen">
+          <div class="step-screen-inner">
+            <div class="ss-title">账号绑定</div>
+            <div class="ss-account">
+              <span>🔗 @品牌旗舰店</span>
+              <span class="ss-check">✓ 已绑定</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step-arrow">→</div>
+    </div>
+
+    <div class="step-item" id="step4">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <h4>一键开播！</h4>
+        <p>点击开播按钮，AI 主播立即上岗</p>
+        <div class="step-screen">
+          <div class="step-screen-inner">
+            <div class="ss-title">🔴 直播中</div>
+            <div class="live-indicator-mini">
+              <div class="lim-dot"></div>
+              <span>在线 8,234</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:48px;">
+    <button class="btn-primary btn-lg" onclick="goLogin()">立即体验极速开播</button>
+  </div>
+</section>
+
+<!-- ========== 解决方案（权益对比）P6 ========== -->
+<section class="solution" id="solution">
+  <div class="section-header">
+    <div class="section-tag">解决方案</div>
+    <h2 class="section-title">选择适合你的版本</h2>
+    <p class="section-desc">双轨制运营，覆盖各类商家需求</p>
+  </div>
+
+  <div class="plan-cards">
+    <!-- 自助版 -->
+    <div class="plan-card plan-self">
+      <div class="plan-badge">中小商家推荐</div>
+      <div class="plan-icon">⚡</div>
+      <h3 class="plan-name">自助版</h3>
+      <div class="plan-tagline">即买即用 · 快速起步</div>
+      <div class="plan-price">
+        <span class="price-num">499</span>
+        <span class="price-unit">元/周起</span>
+      </div>
+      <ul class="plan-benefits">
+        <li>✓ 极速开播，5分钟上岗</li>
+        <li>✓ AI 智能脚本生成</li>
+        <li>✓ 7×24h 不间断连播</li>
+        <li>✓ 15分钟免费试播</li>
+      </ul>
+      <button class="btn-plan-primary" onclick="goLogin()">立即充值开播</button>
+      <p class="plan-note">累计消耗满 2000 元可升级高级版</p>
+    </div>
+
+    <!-- 高级版 -->
+    <div class="plan-card plan-pro">
+      <div class="plan-badge badge-pro">品牌商家专属</div>
+      <div class="plan-icon">👑</div>
+      <h3 class="plan-name">高级版</h3>
+      <div class="plan-tagline">专属定制 · 深度运营</div>
+      <div class="plan-price">
+        <span class="price-num">定制</span>
+        <span class="price-unit">日耗 ≥ 300元/天</span>
+      </div>
+      <ul class="plan-benefits">
+        <li>✓ 定制/复刻专属数字人</li>
+        <li>✓ 高清直播间 (4K)</li>
+        <li>✓ 深度数据诊断分析</li>
+        <li>✓ 1pp 流量扶持</li>
+        <li>✓ 矩阵多线路开播</li>
+      </ul>
+      <button class="btn-plan-ghost" onclick="location.href='solution.html'">了解高级版权益</button>
+    </div>
+  </div>
+
+  <!-- 权益对比表 -->
+  <div class="compare-table-wrap">
+    <h3 style="text-align:center;margin-bottom:24px;font-size:18px;color:#333">详细权益对比</h3>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>权益项</th>
+          <th>自助版</th>
+          <th>高级版</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>准入方式</td><td>充值 499元/周</td><td>日耗 ≥ 300元</td></tr>
+        <tr><td>7×24h 连播</td><td class="check-cell">✓</td><td class="check-cell">✓</td></tr>
+        <tr><td>AI 脚本生成</td><td class="check-cell">✓</td><td class="check-cell">✓</td></tr>
+        <tr><td>15min 试播</td><td class="check-cell">✓</td><td class="dash-cell">—</td></tr>
+        <tr><td>定制/复刻数字人</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
+        <tr><td>高清直播间（4K）</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
+        <tr><td>深度诊断分析</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
+        <tr><td>1pp 流量扶持</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
+        <tr><td>矩阵多线路开播</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ========== 客户案例 P7 ========== -->
+<section class="cases" id="casesSection">
+  <div class="section-header">
+    <div class="section-tag">客户案例</div>
+    <h2 class="section-title">他们已经在用女娲</h2>
+  </div>
+
+  <div class="cases-grid">
+    <div class="case-card" onclick="location.href='cases.html#case1'">
+      <div class="case-header">
+        <span class="case-industry">美妆护肤</span>
+        <span class="case-tag">极速开播</span>
+      </div>
+      <div class="case-logo">🌸</div>
+      <h4 class="case-name">某头部美妆品牌</h4>
+      <div class="case-metrics">
+        <div class="metric"><span class="metric-val">+320%</span><span class="metric-label">GMV 提升</span></div>
+        <div class="metric"><span class="metric-val">4.8x</span><span class="metric-label">ROI</span></div>
+      </div>
+      <p class="case-desc">引入女娲数字人后，实现 7×24h 不间断直播，月均 GMV 从 50 万增长至 210 万。</p>
+      <span class="case-link">查看案例 →</span>
+    </div>
+
+    <div class="case-card" onclick="location.href='cases.html#case2'">
+      <div class="case-header">
+        <span class="case-industry">3C 数码</span>
+        <span class="case-tag">矩阵运营</span>
+      </div>
+      <div class="case-logo">📱</div>
+      <h4 class="case-name">某知名 3C 零售商</h4>
+      <div class="case-metrics">
+        <div class="metric"><span class="metric-val">8 个</span><span class="metric-label">并发直播间</span></div>
+        <div class="metric"><span class="metric-val">-60%</span><span class="metric-label">运营成本</span></div>
+      </div>
+      <p class="case-desc">矩阵式运营 8 个直播账号，统一管理脚本与形象，运营成本降低 60%。</p>
+      <span class="case-link">查看案例 →</span>
+    </div>
+
+    <div class="case-card" onclick="location.href='cases.html#case3'">
+      <div class="case-header">
+        <span class="case-industry">食品饮料</span>
+        <span class="case-tag">AI 脚本</span>
+      </div>
+      <div class="case-logo">🍵</div>
+      <h4 class="case-name">某新消费食品品牌</h4>
+      <div class="case-metrics">
+        <div class="metric"><span class="metric-val">5.2x</span><span class="metric-label">转化率提升</span></div>
+        <div class="metric"><span class="metric-val">24h</span><span class="metric-label">日均在播时长</span></div>
+      </div>
+      <p class="case-desc">AI 脚本自动优化带货话术，配合全天不间断直播，转化率提升 5.2 倍。</p>
+      <span class="case-link">查看案例 →</span>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:40px;">
+    <a href="cases.html" class="btn-outline btn-lg">查看全部案例</a>
+  </div>
+</section>
+
+<!-- ========== FAQ P8 ========== -->
+<section class="faq" id="faq">
+  <div class="section-header">
+    <div class="section-tag">常见问题</div>
+    <h2 class="section-title">你可能想知道的</h2>
+  </div>
+
+  <div class="faq-list">
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>数字人直播有哪些优势？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        女娲数字人支持 7×24h 不间断开播，无需摄像机、灯光等硬件设备，也无需招募和培训直播人员，真正实现零人力、零硬件的全自动化直播运营。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>什么是极速开播？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        极速开播是女娲推出的一键式直播配置功能，只需选择数字人形象、配置脚本、绑定直播账号，约 5 分钟即可完成全部配置，立刻开始 AI 直播。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>自助版和高级版有什么区别？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        自助版适合中小商家，充值 499元/周即可使用基础直播功能（极速开播、AI脚本、7×24h连播）；高级版面向日均消耗 ≥ 300 元的品牌商家，提供定制数字人、4K 直播间、1pp 流量扶持等高阶功能。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>能定制专属数字人形象吗？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        高级版支持品牌专属数字人定制与真人复刻服务。自助版用户可以从千款标准形象库中选择适合自己品牌的形象。如需定制，可升级至高级版或联系客服咨询。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>AI 脚本是如何生成的？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        女娲 AI 基于海量高转化直播脚本数据训练，根据您的商品信息、品牌调性自动生成带货脚本。您也可以在生成结果上进行手动编辑和优化。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>如何开始使用女娲数字人？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        需要拥有快手广告主账户。登录女娲平台后，根据您的日均消耗情况，系统会自动推荐合适的版本。自助版可直接充值开播，高级版需满足日耗 ≥ 300 元的条件。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>499元/周包含哪些内容？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        自助版 499元/周包含：极速开播功能使用权、AI 脚本生成次数（不限量）、7×24h 不间断开播时长、15 分钟免费试播、基础数据报表。
+      </div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>消耗不达标（高级版）会怎么处理？</span><span class="faq-arrow">+</span>
+      </div>
+      <div class="faq-a">
+        高级版日均消耗低于 300 元时，系统会触发清退流程，账号将暂时受限并开始倒计时，倒计时结束后自动解除限制。累计清退 6 次将永久封禁，可联系客服申诉。
+      </div>
+    </div>
+  </div>
+
+  <div class="faq-footer">
+    没有找到你的问题？<a href="#">查看完整帮助文档 →</a>
+  </div>
+</section>
+
+<!-- ========== Footer ========== -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">女娲数字人</span>
+      </div>
+      <p class="footer-desc">AI 驱动的智能直播平台<br />让数字人为你的品牌代言</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>资源</h5>
+        <a href="#">百科全书</a>
+        <a href="cases.html">客户案例</a>
+        <a href="#">更新公告</a>
+      </div>
+      <div class="footer-col">
+        <h5>关于我们</h5>
+        <a href="#">联系我们</a>
+        <a href="privacy.html">隐私政策</a>
+        <a href="terms.html">服务条款</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2025 女娲数字人 All Rights Reserved</span>
+    <span>京ICP备XXXXXXXX号</span>
+  </div>
+</footer>
+
+<!-- ========== 分流弹窗（覆盖全局） ========== -->
+<div class="modal-overlay" id="flowModal" style="display:none">
+  <div class="flow-modal">
+    <button class="modal-close" onclick="closeFlowModal()">×</button>
+    <div class="flow-banner">系统已为您匹配最优版本！</div>
+
+    <div class="flow-cards" id="flowCards">
+      <!-- 内容由 JS 动态注入 -->
+    </div>
+
+    <p class="flow-note" id="flowNote"></p>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

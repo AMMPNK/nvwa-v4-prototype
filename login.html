@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>广告主登录 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: var(--dark); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 24px; position: relative; overflow: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 600px 600px at 80% -10%, rgba(99,102,241,.25) 0%, transparent 60%),
+        radial-gradient(ellipse 400px 400px at -10% 80%, rgba(236,72,153,.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .login-container {
+      display: flex;
+      width: 100%;
+      max-width: 960px;
+      min-height: 580px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,.5);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left panel */
+    .login-left {
+      flex: 1;
+      background: var(--gradient);
+      padding: 48px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .ll-logo { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 800; font-size: 18px; }
+    .ll-logo .logo-icon { font-size: 20px; }
+    .ll-content { color: #fff; }
+    .ll-title { font-size: 32px; font-weight: 800; line-height: 1.3; margin-bottom: 16px; }
+    .ll-desc { font-size: 14px; opacity: .75; line-height: 1.8; }
+    .ll-features { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+    .ll-feat { display: flex; align-items: center; gap: 10px; font-size: 13px; color: rgba(255,255,255,.85); }
+    .ll-feat::before { content: '✓'; font-weight: 800; }
+    .ll-bottom { font-size: 12px; color: rgba(255,255,255,.4); }
+
+    @media (max-width: 700px) { .login-left { display: none; } }
+
+    /* Right panel */
+    .login-right {
+      background: #fff;
+      width: 440px;
+      flex-shrink: 0;
+      padding: 48px 44px;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 700px) { .login-right { width: 100%; } }
+
+    .lr-back { font-size: 13px; color: var(--text-muted); cursor: pointer; display: flex; align-items: center; gap: 4px; margin-bottom: 32px; transition: color .2s; }
+    .lr-back:hover { color: var(--primary); }
+
+    .lr-title { font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 6px; }
+    .lr-sub { font-size: 14px; color: var(--text-muted); margin-bottom: 32px; }
+
+    /* Tabs */
+    .login-tabs { display: flex; border-bottom: 2px solid var(--border); margin-bottom: 28px; }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Tab panels */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; animation: fadeIn .2s; }
+
+    /* Form */
+    .form-group { margin-bottom: 16px; }
+    .form-label { font-size: 13px; font-weight: 600; color: #374151; margin-bottom: 6px; display: block; }
+    .form-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      color: #0f172a;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      background: #fff;
+    }
+    .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+    .form-input.error { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(244,63,94,.1); }
+
+    .input-wrap { position: relative; }
+    .input-wrap .form-input { padding-right: 44px; }
+    .input-action {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 13px;
+      color: var(--primary);
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      background: none;
+      border: none;
+    }
+    .input-action:disabled { color: var(--text-muted); cursor: default; }
+
+    /* Eye toggle */
+    .eye-btn { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 16px; position: absolute; right: 12px; top: 50%; transform: translateY(-50%); padding: 0; }
+
+    .error-msg { font-size: 12px; color: var(--accent); margin-top: 5px; display: none; }
+    .error-msg.show { display: block; }
+    .success-msg { font-size: 12px; color: #22c55e; margin-top: 5px; display: none; }
+    .success-msg.show { display: block; }
+
+    /* Email autocomplete */
+    .email-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0; right: 0;
+      background: #fff;
+      border: 1.5px solid var(--border);
+      border-top: none;
+      border-radius: 0 0 10px 10px;
+      z-index: 50;
+      display: none;
+    }
+    .email-sug-item { padding: 9px 14px; font-size: 13px; cursor: pointer; transition: background .15s; }
+    .email-sug-item:hover { background: var(--surface); color: var(--primary); }
+
+    /* Forgot password link */
+    .forgot-link { font-size: 13px; color: var(--primary); font-weight: 600; cursor: pointer; display: block; text-align: right; margin-top: -8px; margin-bottom: 20px; }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* Submit btn */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--gradient);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 4px 20px rgba(99,102,241,.3);
+      margin-bottom: 16px;
+    }
+    .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,.4); }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* Cant get code tooltip */
+    .cant-code-wrap { position: relative; display: inline-block; }
+    .cant-code { font-size: 12px; color: var(--text-muted); cursor: pointer; text-decoration: underline dotted; }
+    .cant-code-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 0;
+      background: #0f172a;
+      color: #fff;
+      font-size: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      width: 240px;
+      line-height: 1.6;
+      z-index: 10;
+    }
+    .cant-code-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%; left: 16px;
+      border: 6px solid transparent;
+      border-top-color: #0f172a;
+    }
+    .cant-code-wrap:hover .cant-code-tooltip { display: block; animation: fadeInDown .15s; }
+
+    /* QR code panel */
+    .qr-wrap { text-align: center; padding: 20px 0; }
+    .qr-box {
+      width: 180px; height: 180px;
+      background: #fff;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      margin: 0 auto 16px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .qr-inner { font-size: 13px; color: var(--text-muted); }
+    .qr-grid {
+      width: 140px; height: 140px;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+    .qr-cell { background: #0f172a; border-radius: 1px; }
+    .qr-cell.white { background: #fff; }
+    .qr-expired-mask {
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,.92);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px;
+      display: none;
+    }
+    .qr-expired-mask.show { display: flex; }
+    .qr-refresh-btn {
+      background: var(--gradient);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .qr-hint { font-size: 13px; color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+    .qr-countdown { font-size: 12px; color: var(--text-muted); }
+    .qr-countdown span { color: var(--primary); font-weight: 700; }
+
+    /* Reset password panel */
+    .reset-panel { display: none; }
+    .reset-panel.show { display: block; animation: fadeIn .2s; }
+    .reset-back { font-size: 13px; color: var(--primary); cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+
+    /* Agreement */
+    .agreement { font-size: 12px; color: var(--text-muted); text-align: center; margin-top: 12px; line-height: 1.7; }
+    .agreement a { color: var(--primary); }
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      border: 2px solid rgba(255,255,255,.4);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Modal demo selector */
+    .demo-selector {
+      margin-top: 24px;
+      padding: 16px;
+      background: #fff8f0;
+      border: 1px solid #fed7aa;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .demo-selector p { font-weight: 600; color: #92400e; margin-bottom: 10px; }
+    .demo-selector select {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #fed7aa;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #374151;
+      background: #fff;
+      margin-bottom: 8px;
+    }
+    .demo-selector button {
+      width: 100%;
+      padding: 8px;
+      background: #f59e0b;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+
+    <!-- Left decorative panel -->
+    <div class="login-left">
+      <div class="ll-logo">
+        <span class="logo-icon">✦</span>
+        <span>女娲数字人</span>
+      </div>
+      <div class="ll-content">
+        <h2 class="ll-title">AI 数字人<br />让直播永不停歇</h2>
+        <p class="ll-desc">7×24h 不间断开播，零人力零硬件成本<br />即充即用，5 分钟极速上线</p>
+        <div class="ll-features">
+          <div class="ll-feat">极速开播，5分钟配置上岗</div>
+          <div class="ll-feat">AI 智能脚本，自动生成带货话术</div>
+          <div class="ll-feat">7×24h 不间断，不再错过流量高峰</div>
+          <div class="ll-feat">千款数字人形象，支持品牌定制</div>
+        </div>
+      </div>
+      <div class="ll-bottom">仅对快手广告主开放</div>
+    </div>
+
+    <!-- Right login panel -->
+    <div class="login-right">
+      <div class="lr-back" onclick="history.back()">← 返回</div>
+      <h1 class="lr-title">广告主登录</h1>
+      <p class="lr-sub">使用快手广告主账号登录</p>
+
+      <!-- Tabs -->
+      <div class="login-tabs">
+        <button class="tab-btn active" onclick="switchTab('password', this)">密码登录</button>
+        <button class="tab-btn" onclick="switchTab('sms', this)">验证码登录</button>
+        <button class="tab-btn" onclick="switchTab('qr', this)">扫码登录</button>
+      </div>
+
+      <!-- ===== 密码登录 ===== -->
+      <div class="tab-panel active" id="panel-password">
+        <div id="loginForm">
+          <!-- 账号 -->
+          <div class="form-group">
+            <label class="form-label">账号</label>
+            <div class="input-wrap" style="position:relative">
+              <input type="text" class="form-input" id="pwdAccount" placeholder="手机号 / 邮箱"
+                oninput="handleAccountInput(this)" autocomplete="off" />
+              <!-- 邮箱自动补全 -->
+              <div class="email-suggestions" id="emailSuggestions"></div>
+            </div>
+            <div class="error-msg" id="pwdAccountErr"></div>
+          </div>
+
+          <!-- 密码 -->
+          <div class="form-group">
+            <label class="form-label">密码</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="pwdPassword" placeholder="请输入密码"
+                oninput="clearErr('pwdPasswordErr')" />
+              <button class="eye-btn" id="eyeBtn" onclick="togglePwd('pwdPassword', 'eyeBtn')" type="button">👁</button>
+            </div>
+            <div class="error-msg" id="pwdPasswordErr"></div>
+          </div>
+
+          <a class="forgot-link" onclick="showReset()">忘记密码？</a>
+
+          <div class="error-msg" id="pwdGlobalErr" style="margin-bottom:12px; text-align:center;"></div>
+          <button class="btn-submit" id="pwdSubmit" onclick="submitPassword()">登录</button>
+
+          <p class="agreement">登录即代表同意 <a href="terms.html">用户协议</a> 与 <a href="privacy.html">隐私政策</a></p>
+        </div>
+
+        <!-- 忘记密码 / 重置密码面板 -->
+        <div class="reset-panel" id="resetPanel">
+          <div class="reset-back" onclick="hideReset()">← 返回登录</div>
+          <h3 style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:20px;">重置密码</h3>
+
+          <div class="form-group">
+            <label class="form-label">账号（手机号 / 邮箱）</label>
+            <div class="input-wrap" style="position:relative">
+              <input type="text" class="form-input" id="resetAccount" placeholder="手机号 / 邮箱"
+                oninput="handleAccountInput(this, 'resetAccountErr', true)" autocomplete="off" />
+            </div>
+            <div class="error-msg" id="resetAccountErr"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">新密码</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="resetNewPwd" placeholder="请输入新密码（6位以上）" />
+              <button class="eye-btn" onclick="togglePwd('resetNewPwd', this)" type="button">👁</button>
+            </div>
+            <div class="error-msg" id="resetNewPwdErr"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">确认密码</label>
+            <div class="input-wrap">
+              <input type="password" class="form-input" id="resetConfirmPwd" placeholder="请再次输入密码" />
+              <button class="eye-btn" onclick="togglePwd('resetConfirmPwd', this)" type="button">👁</button>
+            </div>
+            <div class="error-msg" id="resetConfirmPwdErr"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">验证码</label>
+            <div class="input-wrap">
+              <input type="text" class="form-input" id="resetCode" placeholder="请输入验证码" style="padding-right:100px" />
+              <button class="input-action" id="resetSendBtn" onclick="sendResetCode()" type="button">发送验证码</button>
+            </div>
+            <div class="error-msg" id="resetCodeErr"></div>
+            <div class="success-msg" id="resetSentMsg">验证码已发送，请注意查收</div>
+          </div>
+
+          <button class="btn-submit" onclick="submitReset()">重置密码</button>
+        </div>
+      </div>
+
+      <!-- ===== 验证码登录 ===== -->
+      <div class="tab-panel" id="panel-sms">
+        <div class="form-group">
+          <label class="form-label">手机号</label>
+          <input type="tel" class="form-input" id="smsPhone" placeholder="请输入11位手机号"
+            maxlength="11" oninput="handlePhoneInput(this, 'smsPhoneErr', 'smsSendBtn')" />
+          <div class="error-msg" id="smsPhoneErr"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">验证码</label>
+          <div class="input-wrap">
+            <input type="text" class="form-input" id="smsCode" placeholder="请输入验证码" maxlength="6" style="padding-right:110px" />
+            <button class="input-action" id="smsSendBtn" onclick="sendSmsCode()" disabled type="button">发送验证码</button>
+          </div>
+          <div class="error-msg" id="smsCodeErr"></div>
+        </div>
+
+        <div style="margin-bottom:20px;">
+          <div class="cant-code-wrap">
+            <span class="cant-code">收不到验证码？</span>
+            <div class="cant-code-tooltip">
+              • 请确认手机号输入正确<br/>
+              • 验证码短信可能有1-2分钟延迟<br/>
+              • 检查手机是否屏蔽了陌生号码<br/>
+              • 如仍未收到，可尝试切换「密码登录」
+            </div>
+          </div>
+        </div>
+
+        <div class="error-msg" id="smsGlobalErr" style="margin-bottom:12px;text-align:center;"></div>
+        <button class="btn-submit" onclick="submitSms()">登录</button>
+        <p class="agreement">登录即代表同意 <a href="terms.html">用户协议</a> 与 <a href="privacy.html">隐私政策</a></p>
+      </div>
+
+      <!-- ===== 扫码登录 ===== -->
+      <div class="tab-panel" id="panel-qr">
+        <div class="qr-wrap">
+          <div class="qr-box">
+            <!-- 模拟二维码图案 -->
+            <div class="qr-grid" id="qrGrid"></div>
+            <div class="qr-expired-mask" id="qrExpiredMask">
+              <span style="font-size:13px;color:#64748b">二维码已过期</span>
+              <button class="qr-refresh-btn" onclick="refreshQR()">点击刷新</button>
+            </div>
+          </div>
+
+          <p class="qr-hint">请使用<strong>快手 App</strong>扫描二维码<br />扫码后请在手机上确认登录</p>
+          <div class="qr-countdown">二维码有效期 <span id="qrTimer">30</span> 秒</div>
+        </div>
+
+        <!-- 模拟：扫码成功模拟器（原型专用） -->
+        <div class="demo-selector">
+          <p>🧪 原型模拟扫码（实际产品中由快手App扫码完成）</p>
+          <select id="qrUserType">
+            <option value="lowSpend">模拟低消耗用户（日均 &lt; 300元）→ 自助版弹窗</option>
+            <option value="highSpend">模拟高消耗用户（日均 ≥ 300元）→ 高级版弹窗</option>
+            <option value="nonAdv">模拟非广告主账号 → 拒绝登录</option>
+          </select>
+          <button onclick="simulateScan()">模拟扫码成功</button>
+        </div>
+      </div>
+
+      <!-- 密码/验证码登录同样有模拟入口 -->
+      <div class="demo-selector" id="demoPanel" style="display:none">
+        <p>🧪 原型模拟（输入任意内容后，选择登录结果）</p>
+        <select id="demoUserType">
+          <option value="lowSpend">低消耗广告主（日均 &lt; 300元）</option>
+          <option value="highSpend">高消耗广告主（日均 ≥ 300元）</option>
+          <option value="nonAdv">非广告主账号</option>
+        </select>
+        <button onclick="submitWithDemo()">确认登录</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    // ===== Tab 切换 =====
+    function switchTab(name, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + name)?.classList.add('active');
+
+      // 显示演示选择器（密码/验证码）
+      const demo = document.getElementById('demoPanel');
+      if (name === 'password' || name === 'sms') {
+        demo.style.display = 'block';
+      } else {
+        demo.style.display = 'none';
+      }
+
+      if (name === 'qr') initQR();
+    }
+
+    // 初始显示演示选择器
+    document.getElementById('demoPanel').style.display = 'block';
+
+    // ===== 账号输入逻辑 =====
+    const EMAIL_SUFFIXES = ['@qq.com', '@163.com', '@126.com', '@gmail.com', '@outlook.com', '@sina.com'];
+
+    function handleAccountInput(input, errId, isReset) {
+      const val = input.value;
+      const eId = errId || 'pwdAccountErr';
+      clearErr(eId);
+
+      if (val.includes('@')) {
+        const atIdx = val.indexOf('@');
+        const local = val.substring(0, atIdx);
+        const afterAt = val.substring(atIdx);
+
+        const matches = EMAIL_SUFFIXES.filter(s => s.startsWith(afterAt) && s !== afterAt);
+        const container = isReset
+          ? null
+          : document.getElementById('emailSuggestions');
+
+        if (container && matches.length > 0) {
+          container.innerHTML = matches.map(s =>
+            `<div class="email-sug-item" onclick="fillEmail('${local + s}', '${input.id}')">${local + s}</div>`
+          ).join('');
+          container.style.display = 'block';
+        } else if (container) {
+          container.style.display = 'none';
+        }
+      } else {
+        const container = document.getElementById('emailSuggestions');
+        if (container) container.style.display = 'none';
+
+        // 手机号校验（11位时才提示）
+        if (val.length > 11) {
+          showErr(eId, '手机号码格式不正确');
+        }
+      }
+    }
+
+    function fillEmail(email, inputId) {
+      document.getElementById(inputId).value = email;
+      const sug = document.getElementById('emailSuggestions');
+      if (sug) sug.style.display = 'none';
+    }
+
+    // 点击外部关闭建议
+    document.addEventListener('click', e => {
+      if (!e.target.closest('.input-wrap')) {
+        const sug = document.getElementById('emailSuggestions');
+        if (sug) sug.style.display = 'none';
+      }
+    });
+
+    // ===== 密码显隐 =====
+    function togglePwd(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      if (!inp) return;
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      const btnEl = typeof btn === 'string' ? document.getElementById(btn) : btn;
+      if (btnEl) btnEl.textContent = inp.type === 'password' ? '👁' : '🙈';
+    }
+
+    // ===== 手机号输入 =====
+    function handlePhoneInput(input, errId, btnId) {
+      const val = input.value.replace(/\D/g, '');
+      input.value = val;
+      clearErr(errId);
+
+      const btn = document.getElementById(btnId);
+      if (val.length === 11) {
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      } else {
+        btn.disabled = true;
+        btn.style.opacity = '.5';
+        if (val.length > 11) showErr(errId, '手机号码格式不正确');
+      }
+    }
+
+    // ===== 错误/成功消息 =====
+    function showErr(id, msg) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.classList.add('show');
+      const inp = el.previousElementSibling?.querySelector?.('.form-input') ||
+                  document.querySelector(`[id="${id.replace('Err','')}"`)
+      // 找到对应 input 标红
+      const inputId = id.replace('Err', '');
+      const inp2 = document.getElementById(inputId);
+      if (inp2) inp2.classList.add('error');
+    }
+
+    function clearErr(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = '';
+      el.classList.remove('show');
+      const inputId = id.replace('Err', '');
+      const inp = document.getElementById(inputId);
+      if (inp) inp.classList.remove('error');
+    }
+
+    // ===== 密码登录提交 =====
+    function submitPassword() {
+      const account = document.getElementById('pwdAccount').value.trim();
+      const password = document.getElementById('pwdPassword').value;
+      let valid = true;
+
+      if (!account) { showErr('pwdAccountErr', '请输入手机号/邮箱'); valid = false; }
+      if (!password) { showErr('pwdPasswordErr', '请输入密码'); valid = false; }
+      if (!valid) return;
+
+      // 校验手机号位数
+      if (!account.includes('@') && account.replace(/\D/g,'').length !== 11) {
+        showErr('pwdAccountErr', '手机号码格式不正确'); return;
+      }
+
+      // 演示逻辑
+      const demo = document.getElementById('demoPanel');
+      if (demo.style.display !== 'none') {
+        showLoading('pwdSubmit', true);
+        setTimeout(() => {
+          showLoading('pwdSubmit', false);
+          handleLoginResult(document.getElementById('demoUserType').value);
+        }, 1200);
+      }
+    }
+
+    // ===== 验证码登录提交 =====
+    function submitSms() {
+      const phone = document.getElementById('smsPhone').value.trim();
+      const code = document.getElementById('smsCode').value.trim();
+      let valid = true;
+
+      if (!phone || phone.length !== 11) { showErr('smsPhoneErr', '请输入正确的11位手机号'); valid = false; }
+      if (!code) { showErr('smsCodeErr', '请输入验证码'); valid = false; }
+      if (!valid) return;
+
+      const demoType = document.getElementById('demoUserType')?.value || 'lowSpend';
+      showLoading('smsSubmit', true);
+      setTimeout(() => {
+        showLoading('smsSubmit', false);
+        handleLoginResult(demoType);
+      }, 1000);
+    }
+
+    // ===== 发送验证码（SMS） =====
+    let smsTimer = null;
+    function sendSmsCode() {
+      const btn = document.getElementById('smsSendBtn');
+      startCountdown(btn);
+    }
+
+    // ===== 重置密码 - 发送验证码 =====
+    let resetTimer = null;
+    function sendResetCode() {
+      const account = document.getElementById('resetAccount').value.trim();
+      if (!account) { showErr('resetAccountErr', '请先输入手机号/邮箱'); return; }
+      if (!account.includes('@') && account.replace(/\D/g,'').length !== 11) {
+        showErr('resetAccountErr', '手机号码格式不正确'); return;
+      }
+
+      const btn = document.getElementById('resetSendBtn');
+      startCountdown(btn);
+      document.getElementById('resetSentMsg').classList.add('show');
+    }
+
+    function startCountdown(btn) {
+      let sec = 60;
+      btn.disabled = true;
+      btn.textContent = `${sec}s 后重发`;
+      const t = setInterval(() => {
+        sec--;
+        btn.textContent = `${sec}s 后重发`;
+        if (sec <= 0) {
+          clearInterval(t);
+          btn.disabled = false;
+          btn.textContent = '重新发送';
+        }
+      }, 1000);
+    }
+
+    // ===== 重置密码提交 =====
+    function submitReset() {
+      const account = document.getElementById('resetAccount').value.trim();
+      const newPwd = document.getElementById('resetNewPwd').value;
+      const confirmPwd = document.getElementById('resetConfirmPwd').value;
+      const code = document.getElementById('resetCode').value.trim();
+      let valid = true;
+
+      if (!account) { showErr('resetAccountErr', '请输入手机号/邮箱'); valid = false; }
+      if (!newPwd) { showErr('resetNewPwdErr', '请输入新密码'); valid = false; }
+      else if (newPwd.length < 6) { showErr('resetNewPwdErr', '密码不能少于6位'); valid = false; }
+      if (!confirmPwd) { showErr('resetConfirmPwdErr', '请确认密码'); valid = false; }
+      else if (confirmPwd !== newPwd) { showErr('resetConfirmPwdErr', '两次密码不一致'); valid = false; }
+      if (!code) { showErr('resetCodeErr', '请输入验证码'); valid = false; }
+      if (!valid) return;
+
+      alert('✅ 密码重置成功！请用新密码登录');
+      hideReset();
+    }
+
+    // ===== 忘记密码显隐 =====
+    function showReset() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('resetPanel').classList.add('show');
+      document.getElementById('demoPanel').style.display = 'none';
+    }
+
+    function hideReset() {
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('resetPanel').classList.remove('show');
+      document.getElementById('demoPanel').style.display = 'block';
+    }
+
+    // ===== QR 二维码 =====
+    let qrCountdown = null;
+
+    function initQR() {
+      generateQR();
+      startQRTimer();
+    }
+
+    function generateQR() {
+      const grid = document.getElementById('qrGrid');
+      if (!grid) return;
+      // 生成伪随机二维码图案
+      let html = '';
+      const pattern = [
+        1,1,1,1,1,1,1,
+        1,0,0,0,0,0,1,
+        1,0,1,0,1,0,1,
+        1,0,0,0,0,0,1,
+        1,0,1,0,1,0,1,
+        1,0,0,0,0,0,1,
+        1,1,1,1,1,1,1
+      ];
+      for (let i = 0; i < 49; i++) {
+        const base = pattern[i];
+        const rand = Math.random() > 0.6 ? 1 : 0;
+        const cell = (base || rand) ? '' : 'white';
+        html += `<div class="qr-cell ${cell}"></div>`;
+      }
+      grid.innerHTML = html;
+      document.getElementById('qrExpiredMask').classList.remove('show');
+    }
+
+    function startQRTimer() {
+      if (qrCountdown) clearInterval(qrCountdown);
+      let sec = 30;
+      document.getElementById('qrTimer').textContent = sec;
+      qrCountdown = setInterval(() => {
+        sec--;
+        const el = document.getElementById('qrTimer');
+        if (el) el.textContent = sec;
+        if (sec <= 0) {
+          clearInterval(qrCountdown);
+          document.getElementById('qrExpiredMask').classList.add('show');
+        }
+      }, 1000);
+    }
+
+    function refreshQR() {
+      generateQR();
+      startQRTimer();
+    }
+
+    function simulateScan() {
+      const type = document.getElementById('qrUserType').value;
+      if (qrCountdown) clearInterval(qrCountdown);
+      document.getElementById('qrExpiredMask').classList.remove('show');
+      // 显示扫码状态
+      const grid = document.getElementById('qrGrid');
+      if (grid) grid.innerHTML = '<div style="font-size:24px;text-align:center;width:100%;padding:8px">✅<br/><small style="font-size:11px;color:#22c55e">扫码成功</small></div>';
+      setTimeout(() => handleLoginResult(type), 800);
+    }
+
+    // ===== 统一处理登录结果 =====
+    function handleLoginResult(type) {
+      if (type === 'nonAdv') {
+        // 显示错误
+        const activePanel = document.querySelector('.tab-panel.active');
+        const errId = activePanel?.id === 'panel-password' ? 'pwdGlobalErr' :
+                      activePanel?.id === 'panel-sms' ? 'smsGlobalErr' : null;
+        if (errId) {
+          const el = document.getElementById(errId);
+          el.textContent = '暂未开通广告账户，请先前往磁力金牛开通';
+          el.classList.add('show');
+        } else {
+          alert('❌ 暂未开通广告账户，请先前往磁力金牛开通');
+        }
+        return;
+      }
+
+      // 登录成功
+      const spending = type === 'highSpend' ? 500 : 50;
+
+      // 写入状态
+      const state = JSON.parse(sessionStorage.getItem('nvwaState') || '{}');
+      state.isLoggedIn = true;
+      state.spending = spending;
+      state.versionChosen = false;
+      state.userVersion = null;
+      state.unreadCount = 3;
+      sessionStorage.setItem('nvwaState', JSON.stringify(state));
+
+      // 跳转首页并触发分流弹窗
+      window.location.href = 'index.html?loginDone=1&spending=' + spending;
+    }
+
+    // ===== 演示面板快速登录 =====
+    function submitWithDemo() {
+      const type = document.getElementById('demoUserType').value;
+      handleLoginResult(type);
+    }
+
+    // ===== Loading 状态 =====
+    function showLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      if (!btn) return;
+      if (loading) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>登录中...';
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = '登录';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>解决方案 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: #f8fafc; }
+    .sol-hero { background: var(--dark); padding: 120px 24px 80px; text-align: center; position: relative; overflow: hidden; }
+    .sol-hero::before { content:''; position:absolute; inset:0; background: radial-gradient(ellipse 600px 400px at 50% 0%, rgba(99,102,241,.25), transparent 60%); }
+    .sol-hero h1 { font-size: 48px; font-weight: 800; color: #fff; margin-bottom: 16px; position: relative; }
+    .sol-hero p { font-size: 16px; color: rgba(255,255,255,.5); position: relative; }
+
+    .sol-main { max-width: 1200px; margin: 0 auto; padding: 80px 24px; }
+
+    /* Plan comparison cards */
+    .plan-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-bottom: 80px; }
+    @media (max-width: 700px) { .plan-compare { grid-template-columns: 1fr; } }
+
+    .plan-compare-card {
+      border-radius: 24px;
+      padding: 44px 40px;
+      position: relative;
+    }
+    .pcc-self { background: #fff; border: 2px solid #6366f1; box-shadow: 0 8px 40px rgba(99,102,241,.12); }
+    .pcc-pro { background: #0f172a; border: 2px solid rgba(255,255,255,.1); }
+
+    .pcc-tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 50px; margin-bottom: 20px; }
+    .pcc-self .pcc-tag { background: #ede9fe; color: #6366f1; }
+    .pcc-pro .pcc-tag { background: rgba(255,255,255,.08); color: rgba(255,255,255,.7); }
+
+    .pcc-icon { font-size: 44px; margin-bottom: 12px; display: block; }
+    .pcc-name { font-size: 32px; font-weight: 800; margin-bottom: 6px; }
+    .pcc-self .pcc-name { color: #0f172a; }
+    .pcc-pro .pcc-name { color: #fff; }
+
+    .pcc-tagline { font-size: 14px; margin-bottom: 28px; }
+    .pcc-self .pcc-tagline { color: #64748b; }
+    .pcc-pro .pcc-tagline { color: rgba(255,255,255,.45); }
+
+    .pcc-price { margin-bottom: 32px; }
+    .pcc-price .price-main { font-size: 52px; font-weight: 900; line-height: 1; }
+    .pcc-self .price-main { background: linear-gradient(135deg,#6366f1,#8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .pcc-pro .price-main { color: #fff; font-size: 36px; }
+    .pcc-price .price-unit { font-size: 14px; color: #94a3b8; margin-top: 4px; }
+
+    .pcc-benefits { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
+    .pcc-benefit { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+    .pcc-self .pcc-benefit { color: #374151; }
+    .pcc-pro .pcc-benefit { color: rgba(255,255,255,.7); }
+    .pcc-benefit .check { color: #22c55e; font-weight: 700; flex-shrink: 0; }
+
+    .pcc-cta { width: 100%; padding: 15px; font-size: 16px; font-weight: 700; border-radius: 12px; border: none; cursor: pointer; transition: all .2s; }
+    .pcc-self .pcc-cta { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; box-shadow: 0 4px 20px rgba(99,102,241,.3); }
+    .pcc-self .pcc-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(99,102,241,.4); }
+    .pcc-pro .pcc-cta { background: transparent; color: rgba(255,255,255,.7); border: 1.5px solid rgba(255,255,255,.2); }
+    .pcc-pro .pcc-cta:hover { border-color: rgba(255,255,255,.5); color: #fff; }
+
+    .pcc-note { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 14px; }
+
+    /* Upgrade path */
+    .upgrade-path { background: #fff; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; margin-bottom: 64px; }
+    .up-title { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .up-sub { font-size: 14px; color: #64748b; margin-bottom: 36px; }
+    .up-steps { display: flex; align-items: center; gap: 0; }
+    .up-step { flex: 1; text-align: center; position: relative; }
+    .up-step-num { width: 48px; height: 48px; border-radius: 50%; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 16px; }
+    .up-step.current .up-step-num { background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; }
+    .up-step.target .up-step-num { background: #0f172a; color: #fff; }
+    .up-step.mid .up-step-num { background: #f1f5f9; color: #94a3b8; border: 2px dashed #cbd5e1; }
+    .up-step-name { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .up-step-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+    .up-arrow { font-size: 24px; color: #cbd5e1; padding: 0 8px; flex-shrink: 0; margin-bottom: 12px; }
+
+    /* Big compare table */
+    .big-compare { background: #fff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; }
+    .big-compare-title { padding: 32px 40px 24px; font-size: 20px; font-weight: 800; color: #0f172a; }
+    .bct { width: 100%; border-collapse: collapse; }
+    .bct thead tr { background: #f8fafc; }
+    .bct th { padding: 14px 24px; font-size: 13px; font-weight: 700; text-align: center; border-bottom: 2px solid #e2e8f0; }
+    .bct th:first-child { text-align: left; color: #374151; }
+    .bct th.self-col { color: #6366f1; }
+    .bct th.pro-col { color: #0f172a; }
+    .bct td { padding: 14px 24px; text-align: center; font-size: 14px; color: #374151; border-bottom: 1px solid #f1f5f9; }
+    .bct td:first-child { text-align: left; font-weight: 500; color: #374151; }
+    .bct tr:last-child td { border-bottom: none; }
+    .bct tr:hover { background: #fafbff; }
+    .bct .section-row td { background: #f8fafc; font-size: 11px; font-weight: 700; color: #94a3b8; letter-spacing: .08em; text-transform: uppercase; padding: 10px 24px; }
+    .bct .check-green { color: #22c55e; font-size: 18px; font-weight: 700; }
+    .bct .dash-gray { color: #d1d5db; font-size: 18px; }
+    .bct .text-muted { color: #94a3b8; font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<header class="navbar" id="navbar">
+  <div class="navbar-inner">
+    <a href="index.html" class="nav-logo">
+      <span class="logo-icon">✦</span>
+      <span class="logo-text">女娲数字人</span>
+    </a>
+    <nav class="nav-links">
+      <a href="index.html" class="nav-link">首页</a>
+      <a href="solution.html" class="nav-link active">解决方案</a>
+      <a href="cases.html" class="nav-link">案例中心</a>
+    </nav>
+    <div class="nav-cta">
+      <div id="navLoggedOut"><button class="btn-primary" onclick="goLogin()">登录</button></div>
+      <div id="navLoggedIn" style="display:none;align-items:center;gap:12px">
+        <a href="console.html" class="btn-outline">控制台</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Hero -->
+<div class="sol-hero">
+  <h1>选择适合你的版本</h1>
+  <p>双轨制运营，精准匹配不同规模商家的直播需求</p>
+</div>
+
+<div class="sol-main">
+
+  <!-- Plan cards -->
+  <div class="plan-compare">
+    <div class="plan-compare-card pcc-self">
+      <div class="pcc-tag">中小商家推荐</div>
+      <div class="pcc-icon">⚡</div>
+      <div class="pcc-name">自助版</div>
+      <div class="pcc-tagline">即买即用 · 无需申请 · 快速起步</div>
+      <div class="pcc-price">
+        <div class="price-main">499</div>
+        <div class="price-unit">元/周起 · 充值即可使用</div>
+      </div>
+      <div class="pcc-benefits">
+        <div class="pcc-benefit"><span class="check">✓</span> 极速开播，5分钟配置上岗</div>
+        <div class="pcc-benefit"><span class="check">✓</span> AI 智能脚本生成（不限次）</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 7×24h 不间断连播</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 15 分钟免费试播体验</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 基础数据报表</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 千款数字人形象可选</div>
+      </div>
+      <button class="pcc-cta" onclick="goLogin()">立即充值开播</button>
+      <p class="pcc-note">累计消耗满 2,000 元可升级高级版</p>
+    </div>
+
+    <div class="plan-compare-card pcc-pro">
+      <div class="pcc-tag">品牌商家专属</div>
+      <div class="pcc-icon">👑</div>
+      <div class="pcc-name">高级版</div>
+      <div class="pcc-tagline">专属定制 · 深度运营 · 流量扶持</div>
+      <div class="pcc-price">
+        <div class="price-main">定制报价</div>
+        <div class="price-unit">准入门槛：日均消耗 ≥ 300 元</div>
+      </div>
+      <div class="pcc-benefits">
+        <div class="pcc-benefit"><span class="check">✓</span> 定制/复刻专属数字人形象</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 4K 高清直播间</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 深度数据诊断与分析</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 1pp 专属流量扶持</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 矩阵多账号并行开播</div>
+        <div class="pcc-benefit"><span class="check">✓</span> 专属客服 1v1 支持</div>
+      </div>
+      <button class="pcc-cta" onclick="goLogin()">立即登录查看资格</button>
+    </div>
+  </div>
+
+  <!-- 升级路径 -->
+  <div class="upgrade-path">
+    <div class="up-title">📈 版本升级路径</div>
+    <div class="up-sub">自助版用户可通过消耗积累，自动解锁高级版权益</div>
+    <div class="up-steps">
+      <div class="up-step current">
+        <div class="up-step-num">1</div>
+        <div class="up-step-name">注册账号</div>
+        <div class="up-step-desc">快手广告主账号<br/>即可登录</div>
+      </div>
+      <div class="up-arrow">→</div>
+      <div class="up-step current">
+        <div class="up-step-num">2</div>
+        <div class="up-step-name">开通自助版</div>
+        <div class="up-step-desc">充值 499元/周<br/>5分钟极速上线</div>
+      </div>
+      <div class="up-arrow">→</div>
+      <div class="up-step mid">
+        <div class="up-step-num">3</div>
+        <div class="up-step-name">积累消耗</div>
+        <div class="up-step-desc">累计消耗达<br/>2,000 元</div>
+      </div>
+      <div class="up-arrow">→</div>
+      <div class="up-step target">
+        <div class="up-step-num">4</div>
+        <div class="up-step-name">升级高级版</div>
+        <div class="up-step-desc">自动升级，解锁<br/>全部高阶权益</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 详细对比表 -->
+  <div class="big-compare">
+    <div class="big-compare-title">详细功能对比</div>
+    <table class="bct">
+      <thead>
+        <tr>
+          <th>功能项</th>
+          <th class="self-col">⚡ 自助版</th>
+          <th class="pro-col">👑 高级版</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="section-row"><td colspan="3">准入与价格</td></tr>
+        <tr><td>准入方式</td><td>充值 499元/周</td><td>日耗 ≥ 300元/天</td></tr>
+        <tr><td>免费试用</td><td>15分钟试播</td><td class="dash-gray">—</td></tr>
+
+        <tr class="section-row"><td colspan="3">直播能力</td></tr>
+        <tr><td>7×24h 不间断连播</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>极速开播（5分钟上岗）</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>矩阵多账号开播</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+        <tr><td>直播画质</td><td class="text-muted">标清/高清</td><td class="text-muted">4K 超清</td></tr>
+
+        <tr class="section-row"><td colspan="3">数字人形象</td></tr>
+        <tr><td>标准形象库（1000款+）</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>专属定制数字人</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+        <tr><td>真人形象复刻</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+
+        <tr class="section-row"><td colspan="3">AI 能力</td></tr>
+        <tr><td>AI 脚本生成</td><td class="check-green">✓ 不限次</td><td class="check-green">✓ 不限次</td></tr>
+        <tr><td>AI 智能互动（弹幕回复）</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>风格化音色</td><td class="text-muted">20+ 基础音色</td><td class="text-muted">全量音色+定制</td></tr>
+
+        <tr class="section-row"><td colspan="3">数据与运营</td></tr>
+        <tr><td>基础数据报表</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>深度诊断分析</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+        <tr><td>1pp 流量扶持</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+
+        <tr class="section-row"><td colspan="3">服务支持</td></tr>
+        <tr><td>在线帮助文档</td><td class="check-green">✓</td><td class="check-green">✓</td></tr>
+        <tr><td>专属客服 1v1</td><td class="dash-gray">—</td><td class="check-green">✓</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo"><span class="logo-icon">✦</span><span class="logo-text">女娲数字人</span></div>
+      <p class="footer-desc">AI 驱动的智能直播平台</p>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>资源</h5>
+        <a href="cases.html">客户案例</a>
+      </div>
+      <div class="footer-col">
+        <h5>关于</h5>
+        <a href="privacy.html">隐私政策</a>
+        <a href="terms.html">服务条款</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 女娲数字人 All Rights Reserved</span>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    updateNavUI();
+    initNavbarScroll();
+  });
+</script>
+</body>
+</html>

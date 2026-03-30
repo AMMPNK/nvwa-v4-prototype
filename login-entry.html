@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>登录 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: var(--dark); min-height: 100vh; display: flex; flex-direction: column; }
+
+    .entry-wrap {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .entry-wrap::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(#6366f1, transparent 70%);
+      top: -200px; right: -200px;
+      opacity: .3;
+      pointer-events: none;
+    }
+    .entry-wrap::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(#ec4899, transparent 70%);
+      bottom: -150px; left: -100px;
+      opacity: .25;
+      pointer-events: none;
+    }
+
+    .entry-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 28px;
+      padding: 60px 72px;
+      max-width: 520px;
+      width: 100%;
+      text-align: center;
+      backdrop-filter: blur(20px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .entry-logo {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; font-weight: 800; font-size: 22px; color: #fff;
+      margin-bottom: 40px;
+    }
+    .entry-logo .logo-icon { font-size: 24px; background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .entry-welcome {
+      font-size: 32px; font-weight: 800; color: #fff;
+      margin-bottom: 12px;
+      background: var(--gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .entry-hint {
+      font-size: 14px;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 48px;
+      line-height: 1.7;
+    }
+    .entry-hint em {
+      font-style: normal;
+      color: rgba(255,255,255,.7);
+      font-weight: 600;
+    }
+
+    .btn-entry {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: var(--gradient);
+      color: #fff;
+      font-size: 17px;
+      font-weight: 700;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 8px 32px rgba(99,102,241,.4);
+      margin-bottom: 24px;
+      text-decoration: none;
+    }
+    .btn-entry:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(99,102,241,.5); }
+
+    .entry-back {
+      display: inline-block;
+      color: rgba(255,255,255,.35);
+      font-size: 13px;
+      cursor: pointer;
+      transition: color .2s;
+      margin-top: 8px;
+      text-decoration: none;
+    }
+    .entry-back:hover { color: rgba(255,255,255,.7); }
+  </style>
+</head>
+<body>
+  <div class="entry-wrap">
+    <div class="entry-card">
+      <div class="entry-logo">
+        <span class="logo-icon">✦</span>
+        <span>女娲数字人</span>
+      </div>
+
+      <h1 class="entry-welcome">欢迎使用女娲</h1>
+      <p class="entry-hint">
+        平台目前仅支持<em>广告主</em>登录使用<br />
+        请使用您的快手广告主账号登录
+      </p>
+
+      <a href="login.html" class="btn-entry">广告主登录</a>
+      <a href="index.html" class="entry-back">← 返回首页</a>
+    </div>
+  </div>
+</body>
+</html>

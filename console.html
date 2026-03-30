@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>控制台 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif; background: #f1f5f9; min-height: 100vh; display: flex; }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 220px;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      overflow-y: auto;
+    }
+
+    .sb-logo { padding: 24px 20px 20px; display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 16px; color: #fff; border-bottom: 1px solid rgba(255,255,255,.06); }
+    .sb-logo-icon { font-size: 18px; background: var(--gradient, linear-gradient(135deg,#6366f1,#8b5cf6,#ec4899)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+    .sb-menu { flex: 1; padding: 12px 0; }
+    .sb-section { padding: 8px 20px 4px; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.25); letter-spacing: .12em; text-transform: uppercase; }
+
+    .sb-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,.55);
+      cursor: pointer;
+      transition: all .15s;
+      border-radius: 0;
+      position: relative;
+      text-decoration: none;
+    }
+    .sb-item:hover { color: #fff; background: rgba(255,255,255,.05); }
+    .sb-item.active { color: #fff; background: rgba(99,102,241,.2); }
+    .sb-item.active::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: linear-gradient(180deg,#6366f1,#8b5cf6); border-radius: 0 2px 2px 0; }
+
+    .sb-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+    .sb-badge { margin-left: auto; background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; min-width: 18px; height: 18px; border-radius: 9px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+    /* Bottom area */
+    .sb-bottom {
+      padding: 12px 0;
+      border-top: 1px solid rgba(255,255,255,.06);
+    }
+    .sb-bottom-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      font-size: 13px;
+      color: rgba(255,255,255,.4);
+      cursor: pointer;
+      transition: all .15s;
+      text-decoration: none;
+    }
+    .sb-bottom-item:hover { color: rgba(255,255,255,.8); }
+
+    .sb-user { display: flex; align-items: center; gap: 10px; padding: 14px 20px 8px; border-top: 1px solid rgba(255,255,255,.06); cursor: pointer; }
+    .sb-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#8b5cf6); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0; }
+    .sb-user-info { flex: 1; min-width: 0; }
+    .sb-user-name { font-size: 13px; color: #fff; font-weight: 600; }
+    .sb-user-plan { font-size: 11px; color: rgba(255,255,255,.35); }
+    .sb-logout-btn { font-size: 11px; color: rgba(255,255,255,.25); cursor: pointer; background: none; border: none; padding: 0 20px 14px; width: 100%; text-align: left; transition: color .2s; }
+    .sb-logout-btn:hover { color: rgba(255,255,255,.6); }
+
+    /* ===== MAIN ===== */
+    .main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+
+    /* Top bar */
+    .topbar {
+      background: #fff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 32px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .topbar-title { font-size: 16px; font-weight: 700; color: #0f172a; }
+    .topbar-right { display: flex; align-items: center; gap: 16px; }
+    .topbar-bell { position: relative; cursor: pointer; font-size: 20px; }
+    .topbar-badge { position: absolute; top: -4px; right: -6px; background: #ef4444; color: #fff; font-size: 10px; font-weight: 700; min-width: 16px; height: 16px; border-radius: 8px; display: flex; align-items: center; justify-content: center; padding: 0 3px; }
+
+    /* Content area */
+    .content { flex: 1; padding: 32px; }
+
+    /* Page switching */
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn .25s; }
+
+    /* ===== DASHBOARD ===== */
+    .dash-welcome { font-size: 22px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
+    .dash-sub { font-size: 14px; color: #64748b; margin-bottom: 32px; }
+
+    .dash-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
+    .dash-stat { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; }
+    .ds-icon { font-size: 28px; margin-bottom: 12px; }
+    .ds-val { font-size: 28px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+    .ds-label { font-size: 12px; color: #64748b; }
+
+    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+
+    /* Live status card */
+    .live-status-card { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; }
+    .card-title { font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+    .card-title a { font-size: 12px; color: #6366f1; font-weight: 500; }
+
+    .live-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid #f1f5f9; }
+    .live-row:last-child { border-bottom: none; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .live-dot.on { background: #22c55e; box-shadow: 0 0 0 3px rgba(34,197,94,.2); animation: blink 1.5s infinite; }
+    .live-dot.off { background: #94a3b8; }
+    .live-info { flex: 1; }
+    .live-name { font-size: 13px; font-weight: 600; color: #0f172a; }
+    .live-meta { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+    .live-data { text-align: right; font-size: 12px; color: #64748b; }
+    .live-viewers { font-weight: 700; color: #0f172a; }
+
+    /* Quick actions */
+    .quick-actions { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; }
+    .qa-btn { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 13px; font-weight: 600; color: #374151; cursor: pointer; margin-bottom: 10px; background: #fff; width: 100%; transition: all .15s; }
+    .qa-btn:hover { border-color: #6366f1; color: #6366f1; background: #f5f3ff; }
+    .qa-icon { font-size: 18px; }
+
+    /* ===== MESSAGES PAGE ===== */
+    .messages-wrap { display: flex; gap: 0; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; min-height: 600px; }
+
+    .msg-sidebar {
+      width: 200px;
+      border-right: 1px solid #e2e8f0;
+      padding: 16px 0;
+      flex-shrink: 0;
+    }
+    .msg-tab {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: #64748b;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .msg-tab:hover { color: #0f172a; background: #f8fafc; }
+    .msg-tab.active { color: #6366f1; background: #f5f3ff; font-weight: 700; }
+    .msg-tab-count { margin-left: auto; background: #ef4444; color: #fff; font-size: 10px; border-radius: 9px; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+    .msg-main { flex: 1; display: flex; flex-direction: column; }
+    .msg-topbar { padding: 16px 20px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; }
+    .msg-topbar h3 { font-size: 15px; font-weight: 700; color: #0f172a; }
+    .mark-all-btn { font-size: 12px; color: #6366f1; cursor: pointer; background: none; border: none; font-weight: 600; }
+    .mark-all-btn:hover { text-decoration: underline; }
+
+    .msg-list { flex: 1; overflow-y: auto; }
+
+    .msg-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      transition: background .15s;
+    }
+    .msg-item:hover { background: #f8fafc; }
+    .msg-item.unread { background: #fafbff; }
+    .msg-item.read { opacity: .8; }
+
+    .msg-icon-wrap { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+    .msg-icon-wrap.live { background: #fef2f2; }
+    .msg-icon-wrap.spend { background: #fff7ed; }
+    .msg-icon-wrap.system { background: #f0fdf4; }
+    .msg-icon-wrap.activity { background: #fdf4ff; }
+    .msg-icon-wrap.upgrade { background: #eff6ff; }
+    .msg-icon-wrap.evict { background: #fef2f2; }
+
+    .msg-body { flex: 1; min-width: 0; }
+    .msg-title { font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .msg-unread-dot { width: 6px; height: 6px; border-radius: 50%; background: #ef4444; flex-shrink: 0; }
+    .msg-summary { font-size: 12px; color: #64748b; line-height: 1.6; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .msg-time { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+
+    .msg-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #94a3b8; gap: 12px; padding: 60px; }
+    .msg-empty-icon { font-size: 48px; }
+
+    /* ===== EVICTED PAGE ===== */
+    .evicted-wrap { max-width: 640px; margin: 0 auto; }
+    .evicted-card { background: #fff; border-radius: 24px; padding: 48px 40px; border: 1px solid #e2e8f0; text-align: center; }
+    .evicted-icon { font-size: 64px; margin-bottom: 20px; }
+    .evicted-title { font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 12px; }
+    .evicted-sub { font-size: 15px; color: #64748b; line-height: 1.7; margin-bottom: 32px; }
+
+    .evicted-counter { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 36px; }
+    .ec-label { font-size: 14px; color: #64748b; }
+    .ec-dots { display: flex; gap: 6px; }
+    .ec-dot { width: 28px; height: 28px; border-radius: 50%; background: #f1f5f9; border: 2px solid #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #94a3b8; }
+    .ec-dot.used { background: #fef2f2; border-color: #ef4444; color: #ef4444; }
+
+    /* Countdown */
+    .evicted-countdown { display: flex; gap: 16px; justify-content: center; margin-bottom: 36px; }
+    .cd-block { text-align: center; }
+    .cd-num { font-size: 40px; font-weight: 900; color: #0f172a; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 20px; min-width: 80px; display: block; }
+    .cd-label { font-size: 11px; color: #94a3b8; margin-top: 6px; }
+    .cd-colon { font-size: 32px; font-weight: 900; color: #e2e8f0; padding-top: 12px; }
+
+    /* Banned */
+    .banned-card { background: #0f172a; border-radius: 24px; padding: 48px 40px; text-align: center; }
+    .banned-title { font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 12px; }
+    .banned-sub { font-size: 14px; color: rgba(255,255,255,.5); line-height: 1.7; margin-bottom: 32px; }
+    .banned-icon { font-size: 64px; margin-bottom: 20px; }
+    .btn-appeal { padding: 14px 40px; background: linear-gradient(135deg,#6366f1,#8b5cf6); color: #fff; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all .2s; }
+    .btn-appeal:hover { opacity: .9; transform: translateY(-2px); }
+
+    /* Evicted toggle */
+    .evicted-toggle { display: flex; gap: 12px; justify-content: center; margin-bottom: 24px; }
+    .toggle-btn { padding: 8px 20px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; background: #fff; color: #64748b; transition: all .2s; }
+    .toggle-btn.active { border-color: #6366f1; color: #6366f1; background: #f5f3ff; }
+
+    /* Help center */
+    .help-list { display: flex; flex-direction: column; gap: 12px; }
+    .help-item { background: #fff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 20px 24px; display: flex; align-items: center; gap: 16px; cursor: pointer; transition: all .2s; }
+    .help-item:hover { border-color: #6366f1; box-shadow: 0 4px 16px rgba(99,102,241,.08); }
+    .hi-icon { font-size: 28px; }
+    .hi-title { font-size: 14px; font-weight: 700; color: #0f172a; margin-bottom: 4px; }
+    .hi-desc { font-size: 12px; color: #64748b; }
+    .hi-arrow { margin-left: auto; color: #94a3b8; font-size: 18px; }
+
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+  </style>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<nav class="sidebar">
+  <div class="sb-logo">
+    <span class="sb-logo-icon">✦</span>
+    <span>女娲数字人</span>
+  </div>
+
+  <div class="sb-menu">
+    <div class="sb-section">工作台</div>
+    <a class="sb-item active" onclick="showPage('dashboard', this)">
+      <span class="sb-icon">🏠</span> 控制台首页
+    </a>
+    <a class="sb-item" onclick="showPage('live', this)">
+      <span class="sb-icon">🎬</span> 极速开播
+    </a>
+    <a class="sb-item" onclick="showPage('live', this)">
+      <span class="sb-icon">🎞️</span> 多分镜直播间
+    </a>
+
+    <div class="sb-section">数据</div>
+    <a class="sb-item" onclick="showPage('data', this)">
+      <span class="sb-icon">📊</span> 数据报表
+    </a>
+    <a class="sb-item" onclick="showPage('data', this)">
+      <span class="sb-icon">💰</span> 消耗账单
+    </a>
+
+    <div class="sb-section">管理</div>
+    <a class="sb-item" onclick="showPage('avatar', this)">
+      <span class="sb-icon">🧑‍🎤</span> 数字人形象
+    </a>
+    <a class="sb-item" onclick="showPage('script', this)">
+      <span class="sb-icon">📝</span> 脚本库
+    </a>
+    <a class="sb-item" onclick="showPage('account', this)">
+      <span class="sb-icon">🔗</span> 账号管理
+    </a>
+
+    <div class="sb-section">资源</div>
+    <a class="sb-item" onclick="showPage('help', this)">
+      <span class="sb-icon">❓</span> 帮助中心
+    </a>
+  </div>
+
+  <!-- Bottom items -->
+  <div class="sb-bottom">
+    <a class="sb-bottom-item" onclick="showPage('announce', this)">
+      <span class="sb-icon">📢</span> 更新公告
+    </a>
+    <a class="sb-bottom-item" onclick="showPage('messages', this)">
+      <span class="sb-icon">🔔</span> 信息中心
+      <span class="sb-badge" id="sbBadge">3</span>
+    </a>
+  </div>
+
+  <!-- User area -->
+  <div class="sb-user">
+    <div class="sb-avatar">广</div>
+    <div class="sb-user-info">
+      <div class="sb-user-name">广告主用户</div>
+      <div class="sb-user-plan" id="userPlanLabel">自助版</div>
+    </div>
+  </div>
+  <button class="sb-logout-btn" onclick="doLogout()">退出登录</button>
+</nav>
+
+<!-- ===== MAIN ===== -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-title" id="topbarTitle">控制台首页</div>
+    <div class="topbar-right">
+      <div class="topbar-bell" onclick="showPage('messages')">
+        🔔
+        <span class="topbar-badge" id="topBadge">3</span>
+      </div>
+      <a href="index.html" style="font-size:13px;color:#6366f1;font-weight:600;">返回官网</a>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ===== 控制台首页 ===== -->
+    <div class="page active" id="page-dashboard">
+      <div class="dash-welcome">欢迎回来 👋</div>
+      <p class="dash-sub">今日直播数据概览</p>
+
+      <div class="dash-stats">
+        <div class="dash-stat">
+          <div class="ds-icon">👁</div>
+          <div class="ds-val">38,204</div>
+          <div class="ds-label">今日总观看</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-icon">💰</div>
+          <div class="ds-val">¥12,840</div>
+          <div class="ds-label">今日 GMV</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-icon">📊</div>
+          <div class="ds-val">4.2x</div>
+          <div class="ds-label">今日 ROI</div>
+        </div>
+        <div class="dash-stat">
+          <div class="ds-icon">⏱</div>
+          <div class="ds-val">18.5h</div>
+          <div class="ds-label">今日开播时长</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="live-status-card">
+          <div class="card-title">
+            直播间状态
+            <a href="#" onclick="showPage('live', null)">管理全部 →</a>
+          </div>
+
+          <div class="live-row">
+            <div class="live-dot on"></div>
+            <div class="live-info">
+              <div class="live-name">主力直播间 - 美妆专区</div>
+              <div class="live-meta">已开播 8h 23min · AI主播「晓晴」</div>
+            </div>
+            <div class="live-data">
+              <div class="live-viewers">12,384</div>
+              <div>在线</div>
+            </div>
+          </div>
+
+          <div class="live-row">
+            <div class="live-dot on"></div>
+            <div class="live-info">
+              <div class="live-name">矩阵直播间 B</div>
+              <div class="live-meta">已开播 3h 15min · AI主播「小米」</div>
+            </div>
+            <div class="live-data">
+              <div class="live-viewers">5,820</div>
+              <div>在线</div>
+            </div>
+          </div>
+
+          <div class="live-row">
+            <div class="live-dot off"></div>
+            <div class="live-info">
+              <div class="live-name">矩阵直播间 C</div>
+              <div class="live-meta">上次结束于 2小时前</div>
+            </div>
+            <div class="live-data">
+              <div>待机</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-actions">
+          <div class="card-title">快速操作</div>
+          <button class="qa-btn" onclick="showPage('live', null)">
+            <span class="qa-icon">🚀</span> 极速开播
+          </button>
+          <button class="qa-btn" onclick="showPage('script', null)">
+            <span class="qa-icon">✨</span> AI生成脚本
+          </button>
+          <button class="qa-btn" onclick="showPage('avatar', null)">
+            <span class="qa-icon">🧑‍🎤</span> 更换数字人形象
+          </button>
+          <button class="qa-btn" onclick="showPage('data', null)">
+            <span class="qa-icon">📈</span> 查看数据报表
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 消息中心 ===== -->
+    <div class="page" id="page-messages">
+      <div class="messages-wrap">
+        <!-- 左侧 Tab -->
+        <div class="msg-sidebar">
+          <div class="msg-tab active" onclick="filterMsg('all', this)">
+            <span>📬</span> 全部
+            <span class="msg-tab-count">3</span>
+          </div>
+          <div class="msg-tab" onclick="filterMsg('live', this)">
+            <span>🔴</span> 开播通知
+            <span class="msg-tab-count">1</span>
+          </div>
+          <div class="msg-tab" onclick="filterMsg('system', this)">
+            <span>📢</span> 系统公告
+            <span class="msg-tab-count">1</span>
+          </div>
+          <div class="msg-tab" onclick="filterMsg('activity', this)">
+            <span>🎉</span> 活动推送
+            <span class="msg-tab-count">1</span>
+          </div>
+        </div>
+
+        <!-- 右侧消息列表 -->
+        <div class="msg-main">
+          <div class="msg-topbar">
+            <h3 id="msgTabTitle">全部消息</h3>
+            <button class="mark-all-btn" onclick="markAllRead()">全部标为已读</button>
+          </div>
+          <div class="msg-list" id="msgList">
+            <!-- 由 JS 渲染 -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 被清退页面 ===== -->
+    <div class="page" id="page-evicted">
+      <div class="evicted-toggle">
+        <button class="toggle-btn active" onclick="showEvictedState('normal', this)">普通清退（倒计时）</button>
+        <button class="toggle-btn" onclick="showEvictedState('banned', this)">永久封禁（6次后）</button>
+      </div>
+
+      <!-- 普通清退 -->
+      <div id="evictedNormal" class="evicted-wrap">
+        <div class="evicted-card">
+          <div class="evicted-icon">⚠️</div>
+          <h2 class="evicted-title">账号已被暂时清退</h2>
+          <p class="evicted-sub">
+            您的高级版账号近7日日均消耗低于 300 元，<br />
+            已触发清退机制，账号功能暂时受限。<br />
+            倒计时结束后将<strong>自动解除限制</strong>。
+          </p>
+
+          <!-- 清退次数 -->
+          <div class="evicted-counter">
+            <span class="ec-label">累计清退次数：</span>
+            <div class="ec-dots">
+              <div class="ec-dot used">1</div>
+              <div class="ec-dot used">2</div>
+              <div class="ec-dot used">3</div>
+              <div class="ec-dot">4</div>
+              <div class="ec-dot">5</div>
+              <div class="ec-dot">6</div>
+            </div>
+          </div>
+
+          <p style="font-size:13px;color:#94a3b8;margin-bottom:20px;">距离解除限制还剩：</p>
+
+          <!-- 倒计时 -->
+          <div class="evicted-countdown">
+            <div class="cd-block">
+              <span class="cd-num" id="cdDays">02</span>
+              <div class="cd-label">天</div>
+            </div>
+            <div class="cd-colon">:</div>
+            <div class="cd-block">
+              <span class="cd-num" id="cdHours">14</span>
+              <div class="cd-label">小时</div>
+            </div>
+            <div class="cd-colon">:</div>
+            <div class="cd-block">
+              <span class="cd-num" id="cdMins">32</span>
+              <div class="cd-label">分钟</div>
+            </div>
+          </div>
+
+          <p style="font-size:13px;color:#64748b;line-height:1.8">
+            解除限制后，请保持日均消耗 ≥ 300 元<br />
+            以维持高级版账号资格
+          </p>
+        </div>
+      </div>
+
+      <!-- 永久封禁 -->
+      <div id="evictedBanned" class="evicted-wrap" style="display:none">
+        <div class="banned-card">
+          <div class="banned-icon">🚫</div>
+          <h2 class="banned-title">账号已永久封禁</h2>
+          <p class="banned-sub">
+            您已累计触发 6 次清退机制，<br />
+            账号已被永久封禁，无法自动解除。<br />
+            如有异议，请联系客服申诉。
+          </p>
+          <button class="btn-appeal" onclick="alert('已为您连接客服，请稍候...')">联系客服申诉</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 帮助中心 ===== -->
+    <div class="page" id="page-help">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:24px">帮助中心</h2>
+      <div class="help-list">
+        <div class="help-item">
+          <div class="hi-icon">📖</div>
+          <div>
+            <div class="hi-title">使用指南</div>
+            <div class="hi-desc">快速上手女娲数字人，图文教程</div>
+          </div>
+          <div class="hi-arrow">›</div>
+        </div>
+        <div class="help-item">
+          <div class="hi-icon">🎬</div>
+          <div>
+            <div class="hi-title">视频教程</div>
+            <div class="hi-desc">极速开播、脚本配置等操作视频</div>
+          </div>
+          <div class="hi-arrow">›</div>
+        </div>
+        <div class="help-item">
+          <div class="hi-icon">❓</div>
+          <div>
+            <div class="hi-title">常见问题 FAQ</div>
+            <div class="hi-desc">账号、充值、开播等常见疑问解答</div>
+          </div>
+          <div class="hi-arrow">›</div>
+        </div>
+        <div class="help-item">
+          <div class="hi-icon">📋</div>
+          <div>
+            <div class="hi-title">平台规则</div>
+            <div class="hi-desc">了解高级版资格维持、清退规则等</div>
+          </div>
+          <div class="hi-arrow">›</div>
+        </div>
+        <div class="help-item">
+          <div class="hi-icon">💬</div>
+          <div>
+            <div class="hi-title">联系客服</div>
+            <div class="hi-desc">工作日 09:00-21:00 在线支持</div>
+          </div>
+          <div class="hi-arrow">›</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 更新公告 ===== -->
+    <div class="page" id="page-announce">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:24px">更新公告</h2>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px">
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">2025-01-15</div>
+          <h4 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:8px">🚀 自助版正式上线！</h4>
+          <p style="font-size:13px;color:#64748b;line-height:1.7">新增自助版（499元/周），中小商家无需门槛即可体验AI数字人直播，支持极速开播、AI脚本生成等核心功能。</p>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px">
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">2025-01-10</div>
+          <h4 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:8px">✨ AI脚本生成2.0升级</h4>
+          <p style="font-size:13px;color:#64748b;line-height:1.7">全面升级AI脚本引擎，基于更多高转化直播数据训练，脚本质量显著提升，支持更多品类商品。</p>
+        </div>
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:24px">
+          <div style="font-size:11px;color:#94a3b8;margin-bottom:8px">2025-01-05</div>
+          <h4 style="font-size:15px;font-weight:700;color:#0f172a;margin-bottom:8px">🧑‍🎤 新增50款数字人形象</h4>
+          <p style="font-size:13px;color:#64748b;line-height:1.7">形象库新增50款高表现力数字人形象，覆盖更多行业场景，支持自定义服装、动作风格。</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== 其他页面占位 ===== -->
+    <div class="page" id="page-live">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px">极速开播</h2>
+      <p style="font-size:14px;color:#64748b;margin-bottom:32px">本期仅展示导航结构，功能深改下期落地</p>
+      <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:48px;text-align:center;color:#94a3b8">
+        <div style="font-size:48px;margin-bottom:16px">🎬</div>
+        <p>极速开播功能页（下期实现）</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-data">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px">数据报表</h2>
+      <p style="font-size:14px;color:#64748b;margin-bottom:32px">本期仅展示导航结构，功能深改下期落地</p>
+      <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:48px;text-align:center;color:#94a3b8">
+        <div style="font-size:48px;margin-bottom:16px">📊</div>
+        <p>数据报表功能页（下期实现）</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-avatar">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px">数字人形象</h2>
+      <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:48px;text-align:center;color:#94a3b8">
+        <div style="font-size:48px;margin-bottom:16px">🧑‍🎤</div>
+        <p>形象管理页（下期实现）</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-script">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px">脚本库</h2>
+      <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:48px;text-align:center;color:#94a3b8">
+        <div style="font-size:48px;margin-bottom:16px">📝</div>
+        <p>脚本管理页（下期实现）</p>
+      </div>
+    </div>
+
+    <div class="page" id="page-account">
+      <h2 style="font-size:20px;font-weight:800;color:#0f172a;margin-bottom:8px">账号管理</h2>
+      <div style="background:#fff;border-radius:16px;border:1px solid #e2e8f0;padding:48px;text-align:center;color:#94a3b8">
+        <div style="font-size:48px;margin-bottom:16px">🔗</div>
+        <p>账号绑定管理页（下期实现）</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+  // ===== 页面切换 =====
+  const PAGE_TITLES = {
+    dashboard: '控制台首页',
+    messages: '信息中心',
+    evicted: '账号状态',
+    help: '帮助中心',
+    announce: '更新公告',
+    live: '极速开播',
+    data: '数据报表',
+    avatar: '数字人形象',
+    script: '脚本库',
+    account: '账号管理'
+  };
+
+  function showPage(name, clickedEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sb-item, .sb-bottom-item').forEach(i => i.classList.remove('active'));
+
+    const page = document.getElementById('page-' + name);
+    if (page) page.classList.add('active');
+    if (clickedEl) clickedEl.classList.add('active');
+
+    const titleEl = document.getElementById('topbarTitle');
+    if (titleEl) titleEl.textContent = PAGE_TITLES[name] || name;
+
+    // 渲染消息列表
+    if (name === 'messages') renderMsgList('all');
+
+    // 被清退倒计时
+    if (name === 'evicted') startEvictedCountdown();
+  }
+
+  // ===== 初始化 =====
+  document.addEventListener('DOMContentLoaded', () => {
+    loadState();
+
+    // 从 hash 判断跳转
+    const hash = window.location.hash;
+    if (hash === '#messages') showPage('messages');
+    if (hash === '#evicted') showPage('evicted');
+
+    // 版本显示
+    const planLabel = document.getElementById('userPlanLabel');
+    if (planLabel) {
+      planLabel.textContent = STATE.userVersion === 'pro' ? '高级版' : '自助版';
+    }
+
+    // badge 同步
+    updateBadge(STATE.unreadCount);
+  });
+
+  function updateBadge(count) {
+    ['sbBadge', 'topBadge'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = count > 99 ? '99+' : count;
+      el.style.display = count > 0 ? 'flex' : 'none';
+    });
+  }
+
+  // ===== 消息数据 =====
+  const MESSAGES = [
+    { id: 1, type: 'live', icon: '🔴', iconClass: 'live', title: '直播间「主力直播间」已开播', summary: '您的直播间已成功开播，当前在线观众 12,384 人，请注意保持稳定运营。', time: '10分钟前', unread: true },
+    { id: 2, type: 'system', icon: '📢', iconClass: 'system', title: '系统维护公告', summary: '平台将于 2025-01-20 02:00-04:00 进行例行维护，维护期间直播间将暂停，请提前做好安排。', time: '2小时前', unread: true },
+    { id: 3, type: 'activity', icon: '🎉', iconClass: 'activity', title: '限时优惠：自助版8折优惠！', summary: '即日起至2025-01-31，自助版充值享8折优惠，399元/周即可开播，机不可失！', time: '昨天', unread: true },
+    { id: 4, type: 'live', icon: '⚠️', iconClass: 'live', title: '直播间「矩阵B」异常中断', summary: '您的直播间因网络波动发生异常中断，已自动尝试重启，当前状态正常。', time: '2天前', unread: false },
+    { id: 5, type: 'system', icon: '🚀', iconClass: 'system', title: '新功能上线：AI智能互动2.0', summary: 'AI智能互动功能已全面升级，弹幕回复更精准，支持商品问询自动应答，立即体验！', time: '3天前', unread: false },
+  ];
+
+  let currentMsgFilter = 'all';
+
+  function renderMsgList(filter) {
+    currentMsgFilter = filter;
+    const container = document.getElementById('msgList');
+    if (!container) return;
+
+    const filtered = filter === 'all' ? MESSAGES : MESSAGES.filter(m => m.type === filter);
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="msg-empty">
+          <div class="msg-empty-icon">📭</div>
+          <p>暂无消息</p>
+        </div>`;
+      return;
+    }
+
+    container.innerHTML = filtered.map(m => `
+      <div class="msg-item ${m.unread ? 'unread' : 'read'}" onclick="readMsg(${m.id})" id="msg-${m.id}">
+        <div class="msg-icon-wrap ${m.iconClass}">${m.icon}</div>
+        <div class="msg-body">
+          <div class="msg-title">
+            ${m.unread ? '<span class="msg-unread-dot"></span>' : ''}
+            ${m.title}
+          </div>
+          <div class="msg-summary">${m.summary}</div>
+          <div class="msg-time">${m.time}</div>
+        </div>
+      </div>`
+    ).join('');
+  }
+
+  function filterMsg(type, el) {
+    document.querySelectorAll('.msg-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    const titles = { all: '全部消息', live: '开播通知', system: '系统公告', activity: '活动推送' };
+    const titleEl = document.getElementById('msgTabTitle');
+    if (titleEl) titleEl.textContent = titles[type] || '消息';
+    renderMsgList(type);
+  }
+
+  function readMsg(id) {
+    const msg = MESSAGES.find(m => m.id === id);
+    if (!msg || !msg.unread) return;
+    msg.unread = false;
+    renderMsgList(currentMsgFilter);
+
+    const unread = MESSAGES.filter(m => m.unread).length;
+    STATE.unreadCount = unread;
+    saveState();
+    updateBadge(unread);
+  }
+
+  function markAllRead() {
+    MESSAGES.forEach(m => m.unread = false);
+    renderMsgList(currentMsgFilter);
+    STATE.unreadCount = 0;
+    saveState();
+    updateBadge(0);
+  }
+
+  // ===== 被清退页面 =====
+  function showEvictedState(state, btn) {
+    document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('evictedNormal').style.display = state === 'normal' ? 'block' : 'none';
+    document.getElementById('evictedBanned').style.display = state === 'banned' ? 'block' : 'none';
+    if (state === 'normal') startEvictedCountdown();
+  }
+
+  let evictTimer = null;
+  function startEvictedCountdown() {
+    if (evictTimer) clearInterval(evictTimer);
+    let total = 2 * 24 * 60 * 60 + 14 * 3600 + 32 * 60; // 演示用初始值
+
+    function update() {
+      const d = Math.floor(total / 86400);
+      const h = Math.floor((total % 86400) / 3600);
+      const m = Math.floor((total % 3600) / 60);
+      const pad = n => String(n).padStart(2, '0');
+      const dEl = document.getElementById('cdDays');
+      const hEl = document.getElementById('cdHours');
+      const mEl = document.getElementById('cdMins');
+      if (dEl) dEl.textContent = pad(d);
+      if (hEl) hEl.textContent = pad(h);
+      if (mEl) mEl.textContent = pad(m);
+      if (total <= 0) clearInterval(evictTimer);
+      total--;
+    }
+    update();
+    evictTimer = setInterval(update, 1000);
+  }
+
+  // ===== 退出 =====
+  function doLogout() {
+    logout();
+  }
+</script>
+</body>
+</html>
