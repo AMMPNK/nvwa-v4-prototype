@@ -317,8 +317,8 @@
     <!-- Right login panel -->
     <div class="login-right">
       <div class="lr-back" onclick="history.back()">← 返回</div>
-      <h1 class="lr-title">广告主登录</h1>
-      <p class="lr-sub">使用快手广告主账号登录</p>
+      <h1 class="lr-title" id="pageTitle">广告主登录</h1>
+      <p class="lr-sub" id="pageSub">使用快手广告主账号登录</p>
 
       <!-- Tabs -->
       <div class="login-tabs">
@@ -462,8 +462,11 @@
         <div class="demo-selector">
           <p>🧪 原型模拟扫码（实际产品中由快手App扫码完成）</p>
           <select id="qrUserType">
-            <option value="lowSpend">模拟低消耗用户（日均 &lt; 300元）→ 自助版弹窗</option>
-            <option value="highSpend">模拟高消耗用户（日均 ≥ 300元）→ 高级版弹窗</option>
+            <option value="lowSpend">新用户·低消耗（日均 &lt; 300元）→ 自助版弹窗</option>
+            <option value="highSpend">新用户·高消耗（日均 ≥ 300元）→ 高级版弹窗</option>
+            <option value="oldUser">老用户（已选过版本）→ 直入控制台</option>
+            <option value="userInPool">用户id·在用户池 → 等同老用户</option>
+            <option value="userNotInPool">用户id·不在用户池 → 名额未开放</option>
             <option value="nonAdv">模拟非广告主账号 → 拒绝登录</option>
           </select>
           <button onclick="simulateScan()">模拟扫码成功</button>
@@ -474,9 +477,12 @@
       <div class="demo-selector" id="demoPanel" style="display:none">
         <p>🧪 原型模拟（输入任意内容后，选择登录结果）</p>
         <select id="demoUserType">
-          <option value="lowSpend">低消耗广告主（日均 &lt; 300元）</option>
-          <option value="highSpend">高消耗广告主（日均 ≥ 300元）</option>
-          <option value="nonAdv">非广告主账号</option>
+          <option value="lowSpend">新用户·低消耗广告主（日均 &lt; 300元）→ 分流弹窗</option>
+          <option value="highSpend">新用户·高消耗广告主（日均 ≥ 300元）→ 分流弹窗</option>
+          <option value="oldUser">老用户（已选过版本）→ 直入控制台</option>
+          <option value="userInPool">用户id·在用户池中 → 等同老用户</option>
+          <option value="userNotInPool">用户id·不在用户池 → 名额未开放</option>
+          <option value="nonAdv">非广告主账号 → 拒绝登录</option>
         </select>
         <button onclick="submitWithDemo()">确认登录</button>
       </div>
@@ -505,6 +511,20 @@
 
     // 初始显示演示选择器
     document.getElementById('demoPanel').style.display = 'block';
+
+    // ===== URL 参数处理：用户id模式 =====
+    (function initPageMode() {
+      const params = new URLSearchParams(location.search);
+      if (params.get('mode') === 'user') {
+        document.getElementById('pageTitle').textContent = '用户id登录';
+        document.getElementById('pageSub').textContent = '使用快手账号密码或验证码登录，系统将自动核验内测资格';
+        // 默认选中「在用户池」选项，方便演示
+        const sel = document.getElementById('demoUserType');
+        if (sel) sel.value = 'userInPool';
+        const qrSel = document.getElementById('qrUserType');
+        if (qrSel) qrSel.value = 'userInPool';
+      }
+    })();
 
     // ===== 账号输入逻辑 =====
     const EMAIL_SUFFIXES = ['@qq.com', '@163.com', '@126.com', '@gmail.com', '@outlook.com', '@sina.com'];
@@ -784,25 +804,33 @@
 
     // ===== 统一处理登录结果 =====
     function handleLoginResult(type) {
+      // —— 拒绝：非广告主 ——
       if (type === 'nonAdv') {
-        // 显示错误
-        const activePanel = document.querySelector('.tab-panel.active');
-        const errId = activePanel?.id === 'panel-password' ? 'pwdGlobalErr' :
-                      activePanel?.id === 'panel-sms' ? 'smsGlobalErr' : null;
-        if (errId) {
-          const el = document.getElementById(errId);
-          el.textContent = '暂未开通广告账户，请先前往磁力金牛开通';
-          el.classList.add('show');
-        } else {
-          alert('❌ 暂未开通广告账户，请先前往磁力金牛开通');
-        }
+        showGlobalErr('暂未开通广告账户，请先前往磁力金牛开通');
         return;
       }
 
-      // 登录成功
-      const spending = type === 'highSpend' ? 500 : 50;
+      // —— 拒绝：用户池外 ——
+      if (type === 'userNotInPool') {
+        showGlobalErr('名额暂未开放，可申请成为广告主后通过广告主账号使用完整功能。');
+        return;
+      }
 
-      // 写入状态
+      // —— 老用户 / 用户池内用户：跳过分流弹窗，直入控制台 ——
+      if (type === 'oldUser' || type === 'userInPool') {
+        const state = JSON.parse(sessionStorage.getItem('nvwaState') || '{}');
+        state.isLoggedIn = true;
+        state.spending = 50;
+        state.versionChosen = true;   // 已选过版本，跳过弹窗
+        state.userVersion = type === 'oldUser' ? null : 'basic'; // 老用户保留原版本
+        state.unreadCount = 3;
+        sessionStorage.setItem('nvwaState', JSON.stringify(state));
+        window.location.href = 'console.html';
+        return;
+      }
+
+      // —— 新用户（低/高消耗）：写入状态，跳首页触发分流弹窗 ——
+      const spending = type === 'highSpend' ? 500 : 50;
       const state = JSON.parse(sessionStorage.getItem('nvwaState') || '{}');
       state.isLoggedIn = true;
       state.spending = spending;
@@ -810,9 +838,21 @@
       state.userVersion = null;
       state.unreadCount = 3;
       sessionStorage.setItem('nvwaState', JSON.stringify(state));
-
-      // 跳转首页并触发分流弹窗
       window.location.href = 'index.html?loginDone=1&spending=' + spending;
+    }
+
+    // 显示全局错误（自动判断当前 tab）
+    function showGlobalErr(msg) {
+      const activePanel = document.querySelector('.tab-panel.active');
+      const errId = activePanel?.id === 'panel-password' ? 'pwdGlobalErr' :
+                    activePanel?.id === 'panel-sms' ? 'smsGlobalErr' : null;
+      if (errId) {
+        const el = document.getElementById(errId);
+        el.textContent = msg;
+        el.classList.add('show');
+      } else {
+        alert(msg);
+      }
     }
 
     // ===== 演示面板快速登录 =====
