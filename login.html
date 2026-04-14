@@ -317,8 +317,8 @@
     <!-- Right login panel -->
     <div class="login-right">
       <div class="lr-back" onclick="history.back()">← 返回</div>
-      <h1 class="lr-title" id="pageTitle">广告主登录</h1>
-      <p class="lr-sub" id="pageSub">使用快手广告主账号登录</p>
+      <h1 class="lr-title" id="pageTitle">欢迎登录</h1>
+      <p class="lr-sub" id="pageSub">使用快手账号登录</p>
 
       <!-- Tabs -->
       <div class="login-tabs">
@@ -516,9 +516,7 @@
     (function initPageMode() {
       const params = new URLSearchParams(location.search);
       if (params.get('mode') === 'user') {
-        document.getElementById('pageTitle').textContent = '用户id登录';
-        document.getElementById('pageSub').textContent = '使用快手账号密码或验证码登录，系统将自动核验内测资格';
-        // 默认选中「在用户池」选项，方便演示
+        // 标题统一，不做特殊区分，仅默认选中用户池选项方便演示
         const sel = document.getElementById('demoUserType');
         if (sel) sel.value = 'userInPool';
         const qrSel = document.getElementById('qrUserType');
@@ -806,13 +804,13 @@
     function handleLoginResult(type) {
       // —— 拒绝：非广告主 ——
       if (type === 'nonAdv') {
-        showGlobalErr('暂未开通广告账户，请先前往磁力金牛开通');
+        showGlobalErr('暂未开通广告账户，请先前往磁力金牛/磁力引擎开通');
         return;
       }
 
       // —— 拒绝：用户池外 ——
       if (type === 'userNotInPool') {
-        showGlobalErr('名额暂未开放，可申请成为广告主后通过广告主账号使用完整功能。');
+        showGlobalErr('名额暂未开放，请通过广告主账号使用完整功能。');
         return;
       }
 

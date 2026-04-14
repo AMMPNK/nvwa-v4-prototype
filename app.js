@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBenefitsSlider();
   initCapHover();
   checkPageSpecific();
+  updateQuickLaunchCTA(); // 极速开播 CTA 登录态显示
 });
 
 // ===== 导航栏滚动效果 =====
@@ -60,6 +61,23 @@ function updateNavUI() {
     out.style.display = 'block';
     loggedIn.style.display = 'none';
   }
+}
+
+// ===== 极速开播 CTA 登录态显示 =====
+function updateQuickLaunchCTA() {
+  const cta = document.getElementById('quickLaunchCTA');
+  if (!cta) return;
+  cta.style.display = STATE.isLoggedIn ? 'block' : 'none';
+}
+
+// ===== 极速开播 CTA 点击逻辑 =====
+function handleQuickLaunchCTA() {
+  if (!STATE.isLoggedIn) {
+    goLogin();
+    return;
+  }
+  // 登录态下跳转极速开播主页（模拟）
+  window.location.href = 'console.html';
 }
 
 // ===== 跳转登录 =====
@@ -152,7 +170,7 @@ function renderFlowCards(isHighSpend) {
       <div class="flow-card dimmed">
         <div class="flow-card-title">自助版 · 即买即用</div>
         <div class="flow-card-sub">低门槛快速体验</div>
-        <div class="flow-card-price">499元/周起</div>
+        <div class="flow-card-price">599元/周起</div>
         <div class="flow-benefits">低门槛快速体验数字人直播<br/>更适合中小品类商家、个人卖家</div>
       </div>
       <div class="flow-card highlighted">
@@ -175,7 +193,7 @@ function renderFlowCards(isHighSpend) {
         <div class="flow-rec-badge">⭐ 系统推荐</div>
         <div class="flow-card-title">自助版 · 即买即用</div>
         <div class="flow-card-sub">低门槛快速体验</div>
-        <div class="flow-card-price">499元/周起</div>
+        <div class="flow-card-price">599元/周起</div>
         <div class="flow-benefits">
           ✓ 极速开播，5分钟上岗<br/>
           ✓ AI 智能脚本生成<br/>
