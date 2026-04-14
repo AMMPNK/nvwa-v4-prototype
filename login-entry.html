@@ -41,7 +41,7 @@
       border: 1px solid rgba(255,255,255,.1);
       border-radius: 28px;
       padding: 60px 72px;
-      max-width: 520px;
+      max-width: 480px;
       width: 100%;
       text-align: center;
       backdrop-filter: blur(20px);
@@ -66,22 +66,20 @@
     }
 
     .entry-hint {
-      font-size: 14px;
-      color: rgba(255,255,255,.45);
-      margin-bottom: 48px;
+      font-size: 15px;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 40px;
       line-height: 1.7;
-    }
-    .entry-hint em {
-      font-style: normal;
-      color: rgba(255,255,255,.7);
-      font-weight: 600;
     }
 
     /* 主入口按钮（广告主） */
     .btn-entry-primary {
-      display: block;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       width: 100%;
-      padding: 18px;
+      padding: 18px 20px;
       background: var(--gradient);
       color: #fff;
       font-size: 17px;
@@ -95,27 +93,11 @@
       text-decoration: none;
     }
     .btn-entry-primary:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(99,102,241,.5); }
-
-    /* 次入口按钮（用户id） */
-    .btn-entry-secondary {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      background: transparent;
+    .btn-entry-primary .btn-sub {
+      font-size: 12px;
+      font-weight: 500;
       color: rgba(255,255,255,.7);
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 14px;
-      border: 1.5px solid rgba(255,255,255,.18);
-      cursor: pointer;
-      transition: all .25s;
-      margin-bottom: 24px;
-      text-decoration: none;
-    }
-    .btn-entry-secondary:hover {
-      border-color: rgba(255,255,255,.4);
-      color: #fff;
-      background: rgba(255,255,255,.06);
+      margin-top: 4px;
     }
 
     /* 分隔线 */
@@ -133,6 +115,37 @@
       flex: 1;
       height: 1px;
       background: rgba(255,255,255,.1);
+    }
+
+    /* 次入口按钮（内测用户） */
+    .btn-entry-secondary {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 16px 20px;
+      background: transparent;
+      color: rgba(255,255,255,.8);
+      font-size: 15px;
+      font-weight: 600;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255,255,255,.2);
+      cursor: pointer;
+      transition: all .25s;
+      margin-bottom: 24px;
+      text-decoration: none;
+    }
+    .btn-entry-secondary:hover {
+      border-color: rgba(255,255,255,.4);
+      color: #fff;
+      background: rgba(255,255,255,.06);
+    }
+    .btn-entry-secondary .btn-sub {
+      font-size: 12px;
+      font-weight: 500;
+      color: rgba(255,255,255,.45);
+      margin-top: 3px;
     }
 
     .entry-back {
@@ -155,17 +168,20 @@
         <span>女娲数字人</span>
       </div>
 
-      <h1 class="entry-welcome">欢迎使用女娲</h1>
-      <p class="entry-hint">
-        平台主要面向<em>快手广告主</em>开放<br />
-        受邀内测用户可通过快手账号密码或验证码登录，系统将自动核验内测资格
-      </p>
+      <h1 class="entry-welcome">欢迎登录</h1>
+      <p class="entry-hint">登录后使用完整功能</p>
 
-      <a href="login.html" class="btn-entry-primary">广告主登录 - 广告主快手id登录</a>
+      <a href="login.html" class="btn-entry-primary">
+        <span class="btn-main">广告主登录</span>
+        <span class="btn-sub">广告主快手id登录</span>
+      </a>
 
       <div class="entry-divider">或</div>
 
-      <a href="login.html?mode=user" class="btn-entry-secondary">内测用户登录 - 快手id登录</a>
+      <a href="login.html?mode=user" class="btn-entry-secondary">
+        <span class="btn-main">内测用户登录</span>
+        <span class="btn-sub">快手id登录</span>
+      </a>
 
       <a href="index.html" class="entry-back">← 返回首页</a>
     </div>
