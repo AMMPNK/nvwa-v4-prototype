@@ -318,7 +318,7 @@
     <div class="login-right">
       <div class="lr-back" onclick="history.back()">← 返回</div>
       <h1 class="lr-title" id="pageTitle">欢迎登录</h1>
-      <p class="lr-sub" id="pageSub">使用快手账号登录</p>
+      <p class="lr-sub" id="pageSub">使用广告主快手账号登录</p>
 
       <!-- Tabs -->
       <div class="login-tabs">
@@ -516,7 +516,9 @@
     (function initPageMode() {
       const params = new URLSearchParams(location.search);
       if (params.get('mode') === 'user') {
-        // 标题统一，不做特殊区分，仅默认选中用户池选项方便演示
+        // 内测用户模式，调整副标题
+        document.getElementById('pageSub').textContent = '使用快手账号登录';
+        // 默认选中用户池选项方便演示
         const sel = document.getElementById('demoUserType');
         if (sel) sel.value = 'userInPool';
         const qrSel = document.getElementById('qrUserType');
