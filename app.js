@@ -188,6 +188,7 @@ function renderFlowCards(isHighSpend) {
       <div class="flow-card highlighted">
         <div class="flow-rec-badge">⭐ 消耗匹配</div>
         <div class="flow-card-title">高级版 · 专属定制</div>
+        <div class="flow-card-price">免费使用<br/><small style="font-size:11px;color:#94a3b8;">考核标准：日均消耗 ≥ 300 元</small></div>
         <div class="flow-benefits">
           ✓ 定制数字人形象<br/>
           ✓ 1080P高清直播间<br/>
@@ -212,6 +213,7 @@ function renderFlowCards(isHighSpend) {
       </div>
       <div class="flow-card dimmed">
         <div class="flow-card-title">高级版 · 专属定制</div>
+        <div class="flow-card-price">免费使用<br/><small style="font-size:11px;color:#94a3b8;">考核标准：日均消耗 ≥ 300 元</small></div>
         <div class="flow-benefits">
           ✓ 定制数字人形象<br/>
           ✓ 1080P高清直播间<br/>
