@@ -226,6 +226,11 @@ function renderFlowCards(isHighSpend) {
 }
 
 function selectVersion(version) {
+  if (version === 'pro') {
+    // 高级版需要先确认
+    showProConfirmModal();
+    return;
+  }
   STATE.versionChosen = true;
   STATE.userVersion = version;
   saveState();
@@ -235,10 +240,42 @@ function selectVersion(version) {
   // 根据版本跳转不同页面
   if (version === 'self') {
     window.location.href = 'cashier.html';
-  } else {
-    window.location.href = 'console.html';
   }
 }
+
+// ===== 高级版确认弹窗 =====
+function showProConfirmModal() {
+  const modal = document.getElementById('proConfirmModal');
+  if (!modal) return;
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeProConfirmModal() {
+  const modal = document.getElementById('proConfirmModal');
+  if (!modal) return;
+  modal.style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function confirmEnterPro() {
+  STATE.versionChosen = true;
+  STATE.userVersion = 'pro';
+  saveState();
+  
+  // 关闭两个弹窗
+  document.getElementById('proConfirmModal').style.display = 'none';
+  document.getElementById('flowModal').style.display = 'none';
+  document.body.style.overflow = '';
+  
+  window.location.href = 'console.html';
+}
+
+// 点击蒙层关闭确认弹窗
+document.addEventListener('click', (e) => {
+  const proModal = document.getElementById('proConfirmModal');
+  if (proModal && e.target === proModal) closeProConfirmModal();
+});
 
 // 点击蒙层关闭弹窗
 document.addEventListener('click', (e) => {
@@ -379,7 +416,7 @@ function updateSolutionUI() {
       // 高消耗：高级版高亮，自助版什么都不显示
       if (planPro) planPro.classList.add('recommended');
       ctaBtn.textContent = '进入高级版';
-      ctaBtn.onclick = () => { window.location.href = 'console.html'; };
+      ctaBtn.onclick = () => { showProConfirmModal(); };
     } else {
       // 低消耗：自助版高亮，高级版显示注释
       if (planSelf) planSelf.classList.add('recommended');
@@ -411,7 +448,7 @@ function handleSolutionCTA() {
   }
   
   if (STATE.spending >= 300) {
-    window.location.href = 'console.html';
+    showProConfirmModal();
   } else {
     window.location.href = 'cashier.html';
   }

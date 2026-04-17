@@ -674,6 +674,25 @@
   </div>
 </div>
 
+<!-- ========== 高级版确认弹窗 ========== -->
+<div class="modal-overlay" id="proConfirmModal" style="display:none">
+  <div class="pro-confirm-modal">
+    <button class="modal-close" onclick="closeProConfirmModal()">×</button>
+    <div class="pro-confirm-icon">🎉</div>
+    <h3 class="pro-confirm-title">免费使用高级版</h3>
+    <p class="pro-confirm-positive">您的日均消耗已达标，无需额外付费，预算可全部用于广告消耗。</p>
+    <div class="pro-confirm-divider"></div>
+    <p class="pro-confirm-notice-title">使用须知：</p>
+    <ul class="pro-confirm-notice-list">
+      <li>日均消耗需 ≥ 300 元</li>
+      <li>消耗不足时权限将被冻结</li>
+      <li>累计冻结 6 次将永久封禁</li>
+    </ul>
+    <p class="pro-confirm-link">详见 <a href="#" onclick="window.open('https://help.kwaixiaohua.com/article/pro-rules', '_blank'); return false;">高级版使用规则</a> →</p>
+    <button class="btn-primary btn-lg" style="width:100%;margin-top:8px;" onclick="confirmEnterPro()">确认，进入高级版</button>
+  </div>
+</div>
+
 <script src="app.js"></script>
 </body>
 </html>
