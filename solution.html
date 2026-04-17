@@ -153,7 +153,14 @@
     <div class="nav-cta">
       <div id="navLoggedOut"><button class="btn-primary" onclick="goLogin()">登录</button></div>
       <div id="navLoggedIn" style="display:none;align-items:center;gap:12px">
-        <a href="console.html" class="btn-outline">控制台</a>
+        <a href="console.html" class="btn-outline" id="navConsoleLink" style="display:none;">控制台</a>
+        <div class="avatar-wrap" id="avatarWrap">
+          <div class="avatar">广</div>
+          <div class="avatar-dropdown">
+            <a href="console.html#messages">消息中心</a>
+            <a href="#" onclick="logout()">退出登录</a>
+          </div>
+        </div>
       </div>
     </div>
   </div>

@@ -630,9 +630,8 @@ section { padding: 100px 24px; }
 
 .plan-card {
   border-radius: 24px;
-  padding: 40px 36px;
+  padding: 48px 36px 40px;
   position: relative;
-  overflow: hidden;
   transition: transform .2s;
 }
 .plan-card:hover { transform: translateY(-4px); }
@@ -682,7 +681,7 @@ section { padding: 100px 24px; }
   box-shadow: 0 0 0 3px rgba(99,102,241,.15), 0 20px 50px rgba(0,0,0,.12);
 }
 .plan-card.recommended::before {
-  content: '系统推荐';
+  content: '消耗匹配';
   position: absolute;
   top: -12px;
   left: 50%;
@@ -693,6 +692,7 @@ section { padding: 100px 24px; }
   font-weight: 700;
   padding: 4px 16px;
   border-radius: 20px;
+  z-index: 10;
 }
 .plan-card.current {
   border-color: #22c55e;
@@ -702,8 +702,7 @@ section { padding: 100px 24px; }
   background: #22c55e;
 }
 .plan-card.disabled {
-  opacity: .5;
-  pointer-events: none;
+  /* 不使用置灰效果，保持正常显示 */
 }
 .plan-card-note {
   font-size: 12px;
@@ -720,6 +719,9 @@ section { padding: 100px 24px; }
 
 /* Solution CTA container */
 .solution-cta-wrap { text-align: center; margin-top: 32px; }
+.solution-cta-hint { margin-top: 16px; font-size: 14px; }
+.solution-cta-hint a { color: var(--primary); font-weight: 500; }
+.solution-cta-hint a:hover { text-decoration: underline; }
 
 /* Compare table */
 .compare-table-wrap {
