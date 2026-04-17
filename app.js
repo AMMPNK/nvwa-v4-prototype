@@ -174,55 +174,52 @@ function renderFlowCards(isHighSpend) {
   if (!container) return;
 
   if (isHighSpend) {
-    // 高级版高亮
+    // 高消耗用户：高级版高亮，自助版无CTA无注释
     container.innerHTML = `
       <div class="flow-card dimmed">
         <div class="flow-card-title">自助版 · 即买即用</div>
-        <div class="flow-card-sub">低门槛快速体验</div>
-        <div class="flow-card-price">599元/周起</div>
-        <div class="flow-benefits">低门槛快速体验数字人直播<br/>更适合中小品类商家、个人卖家</div>
-      </div>
-      <div class="flow-card highlighted">
-        <div class="flow-rec-badge">⭐ 系统推荐</div>
-        <div class="flow-card-title">高级版 · 专属定制</div>
-        <div class="flow-card-sub">日耗 ≥ 300 元 · 品牌商家首选</div>
-        <div class="flow-benefits">
-          ✓ 定制/复刻专属数字人<br/>
-          ✓ 高清直播间（4K）<br/>
-          ✓ 深度诊断分析 + 1pp 流量扶持<br/>
-          ✓ 矩阵多线路开播
-        </div>
-        <button class="flow-btn" onclick="selectVersion('pro')">进入控制台</button>
-      </div>`;
-    if (note) note.textContent = '您的日均消耗已达到高级版标准，享受更多专属权益';
-  } else {
-    // 自助版高亮
-    container.innerHTML = `
-      <div class="flow-card highlighted">
-        <div class="flow-rec-badge">⭐ 系统推荐</div>
-        <div class="flow-card-title">自助版 · 即买即用</div>
-        <div class="flow-card-sub">低门槛快速体验</div>
         <div class="flow-card-price">599元/周起</div>
         <div class="flow-benefits">
           ✓ 极速开播，5分钟上岗<br/>
-          ✓ AI 智能脚本生成<br/>
-          ✓ 7×24h 不间断连播
+          ✓ AI脚本自动生成<br/>
+          ✓ 支持3天连播，每日循环开播
+        </div>
+      </div>
+      <div class="flow-card highlighted">
+        <div class="flow-rec-badge">⭐ 消耗匹配</div>
+        <div class="flow-card-title">高级版 · 专属定制</div>
+        <div class="flow-benefits">
+          ✓ 定制数字人形象<br/>
+          ✓ 1080P高清直播间<br/>
+          ✓ 矩阵多线路开播
+        </div>
+        <button class="flow-btn" onclick="selectVersion('pro')">进入高级版</button>
+      </div>`;
+    if (note) note.innerHTML = '直播内容需符合快手平台对数字人开播管理要求，<a href="#" style="color:var(--primary);text-decoration:underline;">点击查看详情</a>';
+  } else {
+    // 低消耗用户：自助版高亮，高级版无CTA+注释
+    container.innerHTML = `
+      <div class="flow-card highlighted">
+        <div class="flow-rec-badge">⭐ 消耗匹配</div>
+        <div class="flow-card-title">自助版 · 即买即用</div>
+        <div class="flow-card-price">599元/周起</div>
+        <div class="flow-benefits">
+          ✓ 极速开播，5分钟上岗<br/>
+          ✓ AI脚本自动生成<br/>
+          ✓ 支持3天连播，每日循环开播
         </div>
         <button class="flow-btn" onclick="selectVersion('self')">立即购买</button>
       </div>
       <div class="flow-card dimmed">
         <div class="flow-card-title">高级版 · 专属定制</div>
-        <div class="flow-card-sub">日耗 &gt; 300元 · 品牌商家</div>
         <div class="flow-benefits">
-          日耗&gt;300元；关注定制需求、矩阵运营、进阶权益<br/>
-          更适合品牌商家、KA用户
+          ✓ 定制数字人形象<br/>
+          ✓ 1080P高清直播间<br/>
+          ✓ 矩阵多线路开播
         </div>
-        <button class="flow-btn flow-btn-ghost" style="pointer-events:none;opacity:.5">进入控制台</button>
-        <div style="text-align:center;margin-top:10px;font-size:12px;">
-          <a href="solution.html" style="color:var(--primary);" onclick="document.getElementById('flowModal').style.display='none'">了解高级版权益 →</a>
-        </div>
+        <p style="text-align:center;font-size:12px;color:#94a3b8;margin-top:12px;">您的消耗暂不满足此版本</p>
       </div>`;
-    if (note) note.textContent = '累计消耗满 2,000 元可升级高级版';
+    if (note) note.innerHTML = '直播内容需符合快手平台对数字人开播管理要求，<a href="#" style="color:var(--primary);text-decoration:underline;">点击查看详情</a>';
   }
 }
 
