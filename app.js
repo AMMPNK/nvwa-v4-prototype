@@ -208,7 +208,7 @@ function renderFlowCards(isHighSpend) {
           ✓ AI 智能脚本生成<br/>
           ✓ 7×24h 不间断连播
         </div>
-        <button class="flow-btn" onclick="selectVersion('self')">立即充值开播</button>
+        <button class="flow-btn" onclick="selectVersion('self')">立即购买</button>
       </div>
       <div class="flow-card dimmed">
         <div class="flow-card-title">高级版 · 专属定制</div>
@@ -385,7 +385,7 @@ function updateSolutionUI() {
       // 低消耗：自助版高亮，高级版显示注释
       if (planSelf) planSelf.classList.add('recommended');
       if (planProNote) planProNote.textContent = '您的消耗暂不满足此版本';
-      ctaBtn.textContent = '立即充值开播';
+      ctaBtn.textContent = '立即购买';
       ctaBtn.onclick = () => { window.location.href = 'cashier.html'; };
     }
   } else {
