@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>充值开播 — 女娲数字人</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { background: var(--dark); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 24px; position: relative; overflow: hidden; }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 600px 600px at 80% -10%, rgba(99,102,241,.25) 0%, transparent 60%),
+        radial-gradient(ellipse 400px 400px at -10% 80%, rgba(236,72,153,.2) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .cashier-container {
+      background: #fff;
+      border-radius: 28px;
+      width: 100%;
+      max-width: 480px;
+      padding: 48px 44px;
+      box-shadow: 0 40px 100px rgba(0,0,0,.5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cashier-back {
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 32px;
+      transition: color .2s;
+      text-decoration: none;
+    }
+    .cashier-back:hover { color: var(--primary); }
+
+    .cashier-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .cashier-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .cashier-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .cashier-product {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .cp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .cp-row:last-child { margin-bottom: 0; }
+    .cp-label { font-size: 14px; color: var(--text-muted); }
+    .cp-value { font-size: 15px; font-weight: 600; color: #0f172a; }
+    .cp-price {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .cp-price .unit {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    .cashier-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 24px 0;
+    }
+
+    .payment-methods {
+      margin-bottom: 28px;
+    }
+    .pm-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: 12px;
+    }
+    .pm-options {
+      display: flex;
+      gap: 12px;
+    }
+    .pm-option {
+      flex: 1;
+      padding: 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      background: #fff;
+    }
+    .pm-option:hover { border-color: var(--primary); }
+    .pm-option.selected {
+      border-color: var(--primary);
+      background: rgba(99,102,241,.05);
+    }
+    .pm-icon {
+      font-size: 24px;
+      margin-bottom: 6px;
+    }
+    .pm-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .cashier-note {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+    .cashier-note a { color: var(--primary); }
+
+    .btn-pay {
+      width: 100%;
+      padding: 16px;
+      background: var(--gradient);
+      color: #fff;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all .2s;
+      box-shadow: 0 8px 32px rgba(99,102,241,.4);
+    }
+    .btn-pay:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(99,102,241,.5); }
+    .btn-pay:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+    /* 支付成功提示 */
+    .pay-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+      animation: fadeIn .3s;
+    }
+    .pay-success.show { display: block; }
+    .pay-success-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+    .pay-success-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+    .pay-success-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+    .pay-success .btn-primary {
+      padding: 14px 32px;
+    }
+  </style>
+</head>
+<body>
+  <div class="cashier-container">
+    <!-- 支付表单 -->
+    <div id="payForm">
+      <a href="index.html" class="cashier-back">← 返回首页</a>
+
+      <div class="cashier-header">
+        <h1 class="cashier-title">充值开播</h1>
+        <p class="cashier-sub">开通自助版，5分钟极速上线<br/>支持 AI 数字人直播全天候带货</p>
+      </div>
+
+      <div class="cashier-product">
+        <div class="cp-row">
+          <span class="cp-label">商品名称</span>
+          <span class="cp-value">女娲自助版（周卡）</span>
+        </div>
+        <div class="cp-row">
+          <span class="cp-label">有效时长</span>
+          <span class="cp-value">7 天</span>
+        </div>
+        <div class="cp-row">
+          <span class="cp-label">支付金额</span>
+          <span class="cp-price">599<span class="unit">元</span></span>
+        </div>
+      </div>
+
+      <div class="payment-methods">
+        <div class="pm-title">选择支付方式</div>
+        <div class="pm-options">
+          <div class="pm-option selected" onclick="selectPayment(this, 'wechat')">
+            <div class="pm-icon">💚</div>
+            <div class="pm-name">微信支付</div>
+          </div>
+          <div class="pm-option" onclick="selectPayment(this, 'alipay')">
+            <div class="pm-icon">💙</div>
+            <div class="pm-name">支付宝</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cashier-divider"></div>
+
+      <p class="cashier-note">
+        点击支付即表示同意 <a href="terms.html">用户协议</a> 与 <a href="privacy.html">隐私政策</a><br/>
+        开播需遵守女娲数字人开播内容规范要求
+      </p>
+
+      <button class="btn-pay" id="payBtn" onclick="handlePay()">确认支付 ¥599</button>
+    </div>
+
+    <!-- 支付成功 -->
+    <div class="pay-success" id="paySuccess">
+      <div class="pay-success-icon">🎉</div>
+      <h2 class="pay-success-title">支付成功！</h2>
+      <p class="pay-success-desc">
+        您已成功开通自助版<br/>
+        可立即体验极速开播功能
+      </p>
+      <button class="btn-primary btn-lg" onclick="goConsole()">进入控制台</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    let paymentMethod = 'wechat';
+
+    function selectPayment(el, method) {
+      document.querySelectorAll('.pm-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+      paymentMethod = method;
+    }
+
+    function handlePay() {
+      const btn = document.getElementById('payBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<span style="display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle;"></span>支付中...';
+
+      // 模拟支付成功
+      setTimeout(() => {
+        // 更新状态
+        const state = JSON.parse(sessionStorage.getItem('nvwaState') || '{}');
+        state.isLoggedIn = true;
+        state.versionChosen = true;
+        state.userVersion = 'self';
+        state.spending = state.spending || 50;
+        sessionStorage.setItem('nvwaState', JSON.stringify(state));
+
+        // 显示成功
+        document.getElementById('payForm').style.display = 'none';
+        document.getElementById('paySuccess').classList.add('show');
+      }, 2000);
+    }
+
+    function goConsole() {
+      window.location.href = 'console.html';
+    }
+
+    // 添加spin动画
+    const style = document.createElement('style');
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

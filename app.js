@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initCapHover();
   checkPageSpecific();
   updateQuickLaunchCTA(); // 极速开播 CTA 登录态显示
+  updateSolutionUI(); // 解决方案卡片和CTA状态
 });
 
 // ===== 导航栏滚动效果 =====
@@ -223,7 +224,13 @@ function selectVersion(version) {
   saveState();
   document.getElementById('flowModal').style.display = 'none';
   document.body.style.overflow = '';
-  window.location.href = 'console.html';
+  
+  // 根据版本跳转不同页面
+  if (version === 'self') {
+    window.location.href = 'cashier.html';
+  } else {
+    window.location.href = 'console.html';
+  }
 }
 
 // 点击蒙层关闭弹窗
@@ -326,5 +333,97 @@ function checkPageSpecific() {
     history.replaceState({}, '', window.location.pathname);
     // 显示分流弹窗
     setTimeout(() => showFlowModal(), 300);
+  }
+}
+
+// ===== 解决方案页卡片和CTA状态更新 =====
+function updateSolutionUI() {
+  // 首页P6卡片
+  const planSelf = document.getElementById('planSelf');
+  const planPro = document.getElementById('planPro');
+  const planSelfNote = document.getElementById('planSelfNote');
+  const planProNote = document.getElementById('planProNote');
+  
+  // 独立页卡片
+  const pccSelf = document.getElementById('planSelf') ? null : document.getElementById('planSelf');
+  const pccPro = document.getElementById('planPro') ? null : document.getElementById('planPro');
+  
+  // CTA按钮
+  const ctaBtn = document.getElementById('solutionCTABtn');
+  
+  if (!ctaBtn) return;
+  
+  // 清除所有状态类
+  [planSelf, planPro].forEach(el => {
+    if (el) el.classList.remove('recommended', 'current', 'disabled');
+  });
+  [planSelfNote, planProNote].forEach(el => {
+    if (el) el.textContent = '';
+  });
+  
+  if (!STATE.isLoggedIn) {
+    // 未登录：卡片正常，CTA显示「登录查看资格」
+    ctaBtn.textContent = '登录查看资格';
+    ctaBtn.onclick = () => { window.location.href = 'login-entry.html'; };
+    return;
+  }
+  
+  const isHighSpend = STATE.spending >= 300;
+  
+  if (!STATE.versionChosen) {
+    // 已登录未选版本
+    if (isHighSpend) {
+      // 高消耗：高级版高亮
+      if (planSelf) {
+        planSelf.classList.add('disabled');
+        if (planSelfNote) planSelfNote.textContent = '您的消耗暂不满足此版本';
+      }
+      if (planPro) planPro.classList.add('recommended');
+      ctaBtn.textContent = '进入高级版';
+      ctaBtn.onclick = () => { window.location.href = 'console.html'; };
+    } else {
+      // 低消耗：自助版高亮
+      if (planSelf) planSelf.classList.add('recommended');
+      if (planPro) {
+        planPro.classList.add('disabled');
+        if (planProNote) planProNote.textContent = '您的消耗暂不满足此版本';
+      }
+      ctaBtn.textContent = '立即充值开播';
+      ctaBtn.onclick = () => { window.location.href = 'cashier.html'; };
+    }
+  } else {
+    // 已选版本
+    const isSelf = STATE.userVersion === 'self';
+    if (planSelf) {
+      planSelf.classList.toggle('current', isSelf);
+      planSelf.classList.toggle('disabled', !isSelf);
+      if (!isSelf && planSelfNote) planSelfNote.textContent = '当前版本：高级版';
+    }
+    if (planPro) {
+      planPro.classList.toggle('current', !isSelf);
+      planPro.classList.toggle('disabled', isSelf);
+      if (isSelf && planProNote) planProNote.textContent = '当前版本：自助版';
+    }
+    ctaBtn.textContent = '进入控制台';
+    ctaBtn.onclick = () => { window.location.href = 'console.html'; };
+  }
+}
+
+// ===== 解决方案CTA点击处理 =====
+function handleSolutionCTA() {
+  if (!STATE.isLoggedIn) {
+    window.location.href = 'login-entry.html';
+    return;
+  }
+  
+  if (STATE.versionChosen) {
+    window.location.href = 'console.html';
+    return;
+  }
+  
+  if (STATE.spending >= 300) {
+    window.location.href = 'console.html';
+  } else {
+    window.location.href = 'cashier.html';
   }
 }

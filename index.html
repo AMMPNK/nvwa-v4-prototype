@@ -434,12 +434,12 @@
   <div class="section-header">
     <div class="section-tag">解决方案</div>
     <h2 class="section-title">选择适合你的版本</h2>
-    <p class="section-desc">双轨制运营，覆盖各类商家需求</p>
+    <p class="section-desc">双轨制运营，精准匹配不同规模商家的直播需求</p>
   </div>
 
-  <div class="plan-cards">
+  <div class="plan-cards" id="planCards">
     <!-- 自助版 -->
-    <div class="plan-card plan-self">
+    <div class="plan-card plan-self" id="planSelf">
       <div class="plan-badge">中小商家推荐</div>
       <div class="plan-icon">⚡</div>
       <h3 class="plan-name">自助版</h3>
@@ -450,58 +450,34 @@
       </div>
       <ul class="plan-benefits">
         <li>✓ 极速开播，5分钟上岗</li>
-        <li>✓ AI 智能脚本生成</li>
-        <li>✓ 7×24h 不间断连播</li>
-        <li>✓ 15分钟免费试播</li>
+        <li>✓ AI脚本自动生成</li>
+        <li>✓ 7×24h不间断连播</li>
       </ul>
-      <button class="btn-plan-primary" onclick="goLogin()">立即充值开播</button>
-      <p class="plan-note">累计消耗满 2000 元可升级高级版</p>
+      <div class="plan-card-note" id="planSelfNote"></div>
     </div>
 
     <!-- 高级版 -->
-    <div class="plan-card plan-pro">
+    <div class="plan-card plan-pro" id="planPro">
       <div class="plan-badge badge-pro">品牌商家专属</div>
       <div class="plan-icon">👑</div>
       <h3 class="plan-name">高级版</h3>
       <div class="plan-tagline">专属定制 · 深度运营</div>
       <div class="plan-price">
         <span class="price-num">定制</span>
-        <span class="price-unit">日耗 ≥ 300元/天</span>
+        <span class="price-unit">日耗 ≥ 300元</span>
       </div>
       <ul class="plan-benefits">
-        <li>✓ 定制/复刻专属数字人</li>
-        <li>✓ 高清直播间 (4K)</li>
-        <li>✓ 深度数据诊断分析</li>
-        <li>✓ 1pp 流量扶持</li>
+        <li>✓ 定制数字人形象</li>
+        <li>✓ 4K高清直播间</li>
         <li>✓ 矩阵多线路开播</li>
       </ul>
-      <button class="btn-plan-ghost" onclick="location.href='solution.html'">了解高级版权益</button>
+      <div class="plan-card-note" id="planProNote"></div>
     </div>
   </div>
 
-  <!-- 权益对比表 -->
-  <div class="compare-table-wrap">
-    <h3 style="text-align:center;margin-bottom:24px;font-size:18px;color:#333">详细权益对比</h3>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>权益项</th>
-          <th>自助版</th>
-          <th>高级版</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>准入方式</td><td>充值 599元/周</td><td>日耗 ≥ 300元</td></tr>
-        <tr><td>7×24h 连播</td><td class="check-cell">✓</td><td class="check-cell">✓</td></tr>
-        <tr><td>AI 脚本生成</td><td class="check-cell">✓</td><td class="check-cell">✓</td></tr>
-        <tr><td>15min 试播</td><td class="check-cell">✓</td><td class="dash-cell">—</td></tr>
-        <tr><td>定制/复刻数字人</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
-        <tr><td>高清直播间（4K）</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
-        <tr><td>深度诊断分析</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
-        <tr><td>1pp 流量扶持</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
-        <tr><td>矩阵多线路开播</td><td class="dash-cell">—</td><td class="check-cell">✓</td></tr>
-      </tbody>
-    </table>
+  <!-- 通用CTA按钮 -->
+  <div class="solution-cta-wrap" id="solutionCTA">
+    <button class="btn-primary btn-lg" id="solutionCTABtn" onclick="handleSolutionCTA()">登录查看资格</button>
   </div>
 </section>
 

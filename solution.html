@@ -59,6 +59,50 @@
 
     .pcc-note { text-align: center; font-size: 12px; color: #94a3b8; margin-top: 14px; }
 
+    .solution-cta-wrap { margin-top: 48px; }
+
+    .pcc-card-note {
+      font-size: 12px;
+      color: #94a3b8;
+      text-align: center;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(148,163,184,.2);
+    }
+    .pcc-self.disabled,
+    .pcc-pro.disabled {
+      opacity: .5;
+      pointer-events: none;
+    }
+    .pcc-self.recommended::before,
+    .pcc-pro.recommended::before {
+      content: '系统推荐';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 20px;
+    }
+    .pcc-self.current::before,
+    .pcc-pro.current::before {
+      content: '当前版本';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #22c55e;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 20px;
+    }
+
     /* Upgrade path */
     .upgrade-path { background: #fff; border-radius: 20px; padding: 40px; border: 1px solid #e2e8f0; margin-bottom: 64px; }
     .up-title { font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px; }
@@ -124,8 +168,8 @@
 <div class="sol-main">
 
   <!-- Plan cards -->
-  <div class="plan-compare">
-    <div class="plan-compare-card pcc-self">
+  <div class="plan-compare" id="planCards">
+    <div class="plan-compare-card pcc-self" id="planSelf">
       <div class="pcc-tag">中小商家推荐</div>
       <div class="pcc-icon">⚡</div>
       <div class="pcc-name">自助版</div>
@@ -142,11 +186,10 @@
         <div class="pcc-benefit"><span class="check">✓</span> 基础数据报表</div>
         <div class="pcc-benefit"><span class="check">✓</span> 千款数字人形象可选</div>
       </div>
-      <button class="pcc-cta" onclick="goLogin()">立即充值开播</button>
-      <p class="pcc-note">累计消耗满 2,000 元可升级高级版</p>
+      <div class="pcc-card-note" id="planSelfNote"></div>
     </div>
 
-    <div class="plan-compare-card pcc-pro">
+    <div class="plan-compare-card pcc-pro" id="planPro">
       <div class="pcc-tag">品牌商家专属</div>
       <div class="pcc-icon">👑</div>
       <div class="pcc-name">高级版</div>
@@ -163,8 +206,13 @@
         <div class="pcc-benefit"><span class="check">✓</span> 矩阵多账号并行开播</div>
         <div class="pcc-benefit"><span class="check">✓</span> 专属客服 1v1 支持</div>
       </div>
-      <button class="pcc-cta" onclick="goLogin()">立即登录查看资格</button>
+      <div class="pcc-card-note" id="planProNote"></div>
     </div>
+  </div>
+
+  <!-- 通用CTA按钮 -->
+  <div class="solution-cta-wrap" id="solutionCTA" style="text-align:center;margin-bottom:80px;">
+    <button class="btn-primary btn-lg" id="solutionCTABtn" onclick="handleSolutionCTA()">登录查看资格</button>
   </div>
 
   <!-- 升级路径 -->
